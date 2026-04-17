@@ -242,7 +242,7 @@ export const newsletterReports: NewsletterReport[] = [
   {
     slug: "resilience",
     name: "Rural Resilience",
-    tagline: "9-page warm editorial report",
+    tagline: "10-page warm editorial report",
     description:
       "A polished long-form layout for scholarship stories, self-sustaining schools, and infrastructure progress across rural communities.",
     previewAccent: "from-[#1b4332] via-[#2d6a4f] to-[#f4a261]",

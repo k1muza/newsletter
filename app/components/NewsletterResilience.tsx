@@ -19,6 +19,62 @@ const INK = "#1f2933";
 const INK_MID = "#52606d";
 const INK_LIGHT = "#7b8794";
 const HEADING_FONT = 'Georgia, "Times New Roman", serif';
+const RESILIENCE_CONTENTS = [
+  {
+    page: 2,
+    title: "Opening Brief",
+    detail: "Lead framing, report window, and the quarter's opening posture.",
+    accent: CLAY,
+  },
+  {
+    page: 3,
+    title: "Purpose & Vision",
+    detail: "The mission, model, and long-term rationale behind the work.",
+    accent: FOREST_DEEP,
+  },
+  {
+    page: 4,
+    title: "Executive Summary",
+    detail: "The strongest movement across scholarships, learning support, and schools.",
+    accent: AMBER,
+  },
+  {
+    page: 5,
+    title: "Beneficiary Story",
+    detail: "A personal narrative of resilience, return, and educational possibility.",
+    accent: MOSS,
+  },
+  {
+    page: 6,
+    title: "Self-Sustaining Schools",
+    detail: "How school-led enterprise is funding infrastructure and stronger systems.",
+    accent: CLAY,
+  },
+  {
+    page: 7,
+    title: "Innovation & School Stories",
+    detail: "Practical progress in laboratories, libraries, and local school change.",
+    accent: FOREST_DEEP,
+  },
+  {
+    page: 8,
+    title: "Key Developments",
+    detail: "Quarter highlights across partner schools and community impact.",
+    accent: AMBER,
+  },
+  {
+    page: 9,
+    title: "Conclusion & Contact",
+    detail: "Closing note, partnership outlook, and ways to stay connected.",
+    accent: MOSS,
+  },
+];
+const DEFAULT_LEARNING_SUPPORT = {
+  eyebrow: "Learning Support",
+  headline: "1,000 learners",
+  body:
+    "Notebooks, pens, and backpacks were distributed to help students move through the 2026 academic year with essential learning materials already in hand.",
+};
 
 interface NewsletterResilienceProps {
   newsletterSlug: NewsletterSlug;
@@ -61,7 +117,7 @@ export default function NewsletterResilience({
     0,
     Math.max(data.beneficiaryStory.paragraphs.length - 1, 0)
   );
-  const learningSupport = data.scholarship.learningSupport;
+  const learningSupport = data.scholarship.learningSupport ?? DEFAULT_LEARNING_SUPPORT;
 
   function updateListItem(path: string, list: string[], index: number, value: string) {
     const next = list.map((item, itemIndex) => (itemIndex === index ? value : item));
@@ -350,6 +406,134 @@ export default function NewsletterResilience({
           </div>
         </div>
 
+        <div className="page" style={{ background: PAPER }}>
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at top left, rgba(216,161,63,0.12), transparent 22%), radial-gradient(circle at bottom right, rgba(45,106,79,0.12), transparent 26%), linear-gradient(165deg, rgba(255,250,243,0.98), rgba(244,237,227,0.92))",
+            }}
+          />
+          <div className="absolute inset-x-0 top-0 h-[3mm]" style={{ background: FOREST_DEEP }} />
+          <div
+            className="absolute right-[-14mm] top-[22mm] h-[64mm] w-[64mm] rounded-full"
+            style={{ background: "rgba(216,161,63,0.12)" }}
+          />
+          <div
+            className="absolute left-[-18mm] bottom-[18mm] h-[86mm] w-[86mm] rounded-full"
+            style={{ background: "rgba(201,111,77,0.08)" }}
+          />
+          <div className="page-content">
+            <PageIntro
+              eyebrow="Guide"
+              title="Table of contents"
+              subtitle="A quick map of the report before the interior sections begin."
+            />
+
+            <div className="grid grid-cols-[0.84fr_1.16fr] gap-[7mm]">
+              <PaperPanel
+                accent={FOREST_DEEP}
+                background="linear-gradient(180deg, rgba(23,63,53,0.05), rgba(255,255,255,0.98))"
+              >
+                <PanelLabel label="Edition" tone={FOREST_DEEP} />
+                <EditableText
+                  value={data.meta.newsletterTitleLead}
+                  onChange={(value) => updateField("meta.newsletterTitleLead", value)}
+                  editMode={e}
+                  tag="h3"
+                  multiline={false}
+                  className="text-[22pt] font-black leading-[0.92]"
+                  style={{ color: FOREST_DEEP, fontFamily: HEADING_FONT }}
+                />
+                <EditableText
+                  value={data.meta.newsletterTitleAccent}
+                  onChange={(value) => updateField("meta.newsletterTitleAccent", value)}
+                  editMode={e}
+                  tag="h3"
+                  multiline={false}
+                  className="mb-4 text-[22pt] font-black leading-[0.92]"
+                  style={{ color: CLAY, fontFamily: HEADING_FONT }}
+                />
+                <EditableText
+                  value={data.meta.tagline}
+                  onChange={(value) => updateField("meta.tagline", value)}
+                  editMode={e}
+                  tag="p"
+                  multiline={false}
+                  className="text-[7.4pt] font-semibold uppercase tracking-[0.24em]"
+                  style={{ color: INK_LIGHT }}
+                />
+
+                <div className="my-[5mm] h-px" style={{ background: "rgba(23,63,53,0.1)" }} />
+
+                <div className="grid grid-cols-2 gap-[3mm]">
+                  <div
+                    className="rounded-[4mm] border px-[4mm] py-[4mm]"
+                    style={{ borderColor: "rgba(23,63,53,0.08)", background: "#ffffff" }}
+                  >
+                    <p
+                      className="mb-2 text-[6pt] font-black uppercase tracking-[0.28em]"
+                      style={{ color: INK_LIGHT }}
+                    >
+                      Quarter
+                    </p>
+                    <EditableText
+                      value={data.meta.quarter}
+                      onChange={(value) => updateField("meta.quarter", value)}
+                      editMode={e}
+                      tag="p"
+                      multiline={false}
+                      className="text-[13pt] font-black"
+                      style={{ color: FOREST_DEEP, fontFamily: HEADING_FONT }}
+                    />
+                  </div>
+                  <div
+                    className="rounded-[4mm] border px-[4mm] py-[4mm]"
+                    style={{ borderColor: "rgba(23,63,53,0.08)", background: "#ffffff" }}
+                  >
+                    <p
+                      className="mb-2 text-[6pt] font-black uppercase tracking-[0.28em]"
+                      style={{ color: INK_LIGHT }}
+                    >
+                      Year
+                    </p>
+                    <EditableText
+                      value={data.meta.year}
+                      onChange={(value) => updateField("meta.year", value)}
+                      editMode={e}
+                      tag="p"
+                      multiline={false}
+                      className="text-[13pt] font-black"
+                      style={{ color: CLAY, fontFamily: HEADING_FONT }}
+                    />
+                  </div>
+                </div>
+
+                <p
+                  className="mt-[5mm] text-[7.5pt] leading-relaxed"
+                  style={{ color: INK_MID }}
+                >
+                  This contents page tracks the numbered interior sequence after the decorative cover.
+                </p>
+              </PaperPanel>
+
+              <div className="space-y-[3mm]">
+                {RESILIENCE_CONTENTS.map((entry) => (
+                  <ContentsEntry
+                    key={entry.page}
+                    accent={entry.accent}
+                    detail={entry.detail}
+                    page={entry.page}
+                    title={entry.title}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <PageFooter organizationName={org} pageNum={1} section="Contents" />
+        </div>
+
         <div className="page" style={{ background: SAND }}>
           <div
             className="absolute inset-0"
@@ -595,7 +779,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={1} section="Opening Brief" />
+          <PageFooter organizationName={org} pageNum={2} section="Opening Brief" />
         </div>
 
         <div className="page" style={{ background: PAPER }}>
@@ -734,7 +918,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={2} section="Purpose & Vision" />
+          <PageFooter organizationName={org} pageNum={3} section="Purpose & Vision" />
         </div>
 
         <div className="page" style={{ background: FOREST_DEEP }}>
@@ -875,7 +1059,12 @@ export default function NewsletterResilience({
                 <DarkPanel>
                   <EditableText
                     value={learningSupport.eyebrow}
-                    onChange={(value) => updateField("scholarship.learningSupport.eyebrow", value)}
+                    onChange={(value) =>
+                      updateField("scholarship.learningSupport", {
+                        ...learningSupport,
+                        eyebrow: value,
+                      })
+                    }
                     editMode={e}
                     tag="p"
                     multiline={false}
@@ -884,7 +1073,12 @@ export default function NewsletterResilience({
                   />
                   <EditableText
                     value={learningSupport.headline}
-                    onChange={(value) => updateField("scholarship.learningSupport.headline", value)}
+                    onChange={(value) =>
+                      updateField("scholarship.learningSupport", {
+                        ...learningSupport,
+                        headline: value,
+                      })
+                    }
                     editMode={e}
                     tag="p"
                     multiline={false}
@@ -893,7 +1087,12 @@ export default function NewsletterResilience({
                   />
                   <EditableText
                     value={learningSupport.body}
-                    onChange={(value) => updateField("scholarship.learningSupport.body", value)}
+                    onChange={(value) =>
+                      updateField("scholarship.learningSupport", {
+                        ...learningSupport,
+                        body: value,
+                      })
+                    }
                     editMode={e}
                     tag="p"
                     className="text-[7.6pt] leading-relaxed"
@@ -904,7 +1103,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={3} section="Executive Summary" theme="dark" />
+          <PageFooter organizationName={org} pageNum={4} section="Executive Summary" theme="dark" />
         </div>
 
         <div className="page" style={{ background: PAPER }}>
@@ -1033,7 +1232,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={4} section="Beneficiary Story" />
+          <PageFooter organizationName={org} pageNum={5} section="Beneficiary Story" />
         </div>
 
         <div className="page" style={{ background: SAND }}>
@@ -1165,7 +1364,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={5} section="Self-Sustaining Schools" />
+          <PageFooter organizationName={org} pageNum={6} section="Self-Sustaining Schools" />
         </div>
 
         <div className="page" style={{ background: PAPER }}>
@@ -1295,7 +1494,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={6} section="Innovation & School Stories" />
+          <PageFooter organizationName={org} pageNum={7} section="Innovation & School Stories" />
         </div>
 
         <div className="page" style={{ background: FOREST }}>
@@ -1460,7 +1659,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={7} section="Key Developments" theme="dark" />
+          <PageFooter organizationName={org} pageNum={8} section="Key Developments" theme="dark" />
         </div>
 
         <div className="page" style={{ background: PAPER }}>
@@ -1591,7 +1790,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={8} section="Conclusion & Contact" />
+          <PageFooter organizationName={org} pageNum={9} section="Conclusion & Contact" />
         </div>
       </div>
 
@@ -1660,6 +1859,52 @@ function PageIntro({
       >
         {subtitle}
       </p>
+    </div>
+  );
+}
+
+function ContentsEntry({
+  accent,
+  detail,
+  page,
+  title,
+}: {
+  accent: string;
+  detail: string;
+  page: number;
+  title: string;
+}) {
+  return (
+    <div
+      className="rounded-[5mm] border px-[5mm] py-[4mm]"
+      style={{
+        borderColor: "rgba(23,63,53,0.08)",
+        background: "rgba(255,255,255,0.82)",
+        boxShadow: "0 16px 34px rgba(23,63,53,0.05)",
+      }}
+    >
+      <div className="flex items-start gap-4">
+        <div
+          className="flex h-[11mm] w-[11mm] shrink-0 items-center justify-center rounded-full text-[8pt] font-black text-white"
+          style={{ background: accent, fontFamily: HEADING_FONT }}
+        >
+          {page}
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="mb-2 flex items-center gap-3">
+            <h3
+              className="text-[11pt] font-black leading-none"
+              style={{ color: FOREST_DEEP, fontFamily: HEADING_FONT }}
+            >
+              {title}
+            </h3>
+            <div className="h-px flex-1" style={{ background: "rgba(23,63,53,0.12)" }} />
+          </div>
+          <p className="text-[7.1pt] leading-relaxed" style={{ color: INK_MID }}>
+            {detail}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

@@ -151,6 +151,12 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
         let cursor = next;
 
         for (let i = 0; i < keys.length - 1; i += 1) {
+          const current = cursor[keys[i]];
+
+          if (typeof current !== "object" || current === null || Array.isArray(current)) {
+            cursor[keys[i]] = {};
+          }
+
           cursor = cursor[keys[i]] as Record<string, unknown>;
         }
 
