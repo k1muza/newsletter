@@ -11,10 +11,18 @@ export interface School {
   footnote?: string;
 }
 
+export interface NewsletterImageAsset {
+  url: string | null;
+  storagePath: string | null;
+}
+
 export interface NewsletterData {
   meta: {
     quarter: string;
     year: string;
+    organizationName: string;
+    newsletterTitleLead: string;
+    newsletterTitleAccent: string;
     preparedBy: string;
     tagline: string;
   };
@@ -28,6 +36,7 @@ export interface NewsletterData {
     title: string;
     subtitle: string;
     paragraphs: string[];
+    image: NewsletterImageAsset;
   };
   about: {
     vision: string;
@@ -64,6 +73,7 @@ export interface NewsletterData {
   beneficiaryStory: {
     name: string;
     paragraphs: string[];
+    image: NewsletterImageAsset;
   };
   quarterlyHighlights: string[];
   conclusion: {
@@ -82,13 +92,24 @@ export interface NewsletterData {
   photos: Array<{
     caption: string;
     placeholder: string;
+    image: NewsletterImageAsset;
   }>;
+}
+
+export function createEmptyImageAsset(): NewsletterImageAsset {
+  return {
+    url: null,
+    storagePath: null,
+  };
 }
 
 export const defaultData: NewsletterData = {
   meta: {
     quarter: "Q1",
     year: "2026",
+    organizationName: "Tererai Trent International Foundation",
+    newsletterTitleLead: "Quarterly",
+    newsletterTitleAccent: "Newsletter",
     preparedBy: "Nothando Muza",
     tagline: "Providing universal access to quality education",
   },
@@ -109,6 +130,7 @@ export const defaultData: NewsletterData = {
       "This quarter reflects our continued commitment to expanding access to quality education while strengthening sustainable, community-driven solutions across our partner schools. Through scholarships, infrastructure development, and income-generating initiatives, we are seeing encouraging progress in both learning environments and community empowerment.",
       "We remain grateful to our partners, donors, and communities whose support makes this work possible, and we look forward to building on this momentum in the months ahead.",
     ],
+    image: createEmptyImageAsset(),
   },
   about: {
     vision:
@@ -236,6 +258,7 @@ export const defaultData: NewsletterData = {
       "Today, she is pursuing a Bachelor's Degree in Peace and Governance at Bindura University. \"TTI believed in me when I had almost lost hope. Because of their support, I am now pursuing my dream at university and building a better future for my child and myself.\"",
       "Her story is a powerful example of resilience, second chances, and the long-term impact of educational support.",
     ],
+    image: createEmptyImageAsset(),
   },
   quarterlyHighlights: [
     "37 students supported through scholarships",
@@ -273,30 +296,37 @@ export const defaultData: NewsletterData = {
     {
       caption: "Irrigation water 10 000l storage tanks connected to a solar powered borehole/water well",
       placeholder: "irrigation-tank",
+      image: createEmptyImageAsset(),
     },
     {
       caption: "Musukwi Primary School sponsored desks and chairs through the partnership of OSU and Awakened Woman",
       placeholder: "desks-chairs",
+      image: createEmptyImageAsset(),
     },
     {
       caption: "Matau Primary School garden, maize project",
       placeholder: "maize-garden",
+      image: createEmptyImageAsset(),
     },
     {
       caption: "Matau Primary School Paw Paw plant project — 200 plants, aiming to add 300 more",
       placeholder: "pawpaw-plants",
+      image: createEmptyImageAsset(),
     },
     {
       caption: "Drilling of a water well for irrigation gardens and safe drinking water",
       placeholder: "water-well-drilling",
+      image: createEmptyImageAsset(),
     },
     {
       caption: "Chivakanenyama Secondary School classroom block, sponsored by the irrigation garden",
       placeholder: "classroom-block",
+      image: createEmptyImageAsset(),
     },
     {
       caption: "Chiroti Secondary School Science laboratory sponsored by Peace Mitchel",
       placeholder: "science-lab",
+      image: createEmptyImageAsset(),
     },
   ],
 };

@@ -1,12 +1,18 @@
 /** Reusable running header + footer that appear on every interior page */
 
 interface PageFooterProps {
+  organizationName: string;
   pageNum: number;
   section?: string;
   theme?: "light" | "dark";
 }
 
-export function PageFooter({ pageNum, section, theme = "light" }: PageFooterProps) {
+export function PageFooter({
+  organizationName,
+  pageNum,
+  section,
+  theme = "light",
+}: PageFooterProps) {
   const isDark = theme === "dark";
 
   return (
@@ -20,7 +26,7 @@ export function PageFooter({ pageNum, section, theme = "light" }: PageFooterProp
           isDark ? "text-white/35" : "text-gray-400"
         }`}
       >
-        Tererai Trent International Foundation
+        {organizationName}
       </span>
       <div className="flex items-center gap-3">
         {section && (

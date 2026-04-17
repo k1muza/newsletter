@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, ElementType } from "react";
+import { useRef, useEffect, type CSSProperties, type ElementType, type Ref } from "react";
 
 interface Props {
   value: string;
@@ -9,9 +9,18 @@ interface Props {
   tag?: ElementType;
   className?: string;
   multiline?: boolean;
+  style?: CSSProperties;
 }
 
-export function EditableText({ value, onChange, editMode, tag: Tag = "span", className = "", multiline = true }: Props) {
+export function EditableText({
+  value,
+  onChange,
+  editMode,
+  tag: Tag = "span",
+  className = "",
+  multiline = true,
+  style,
+}: Props) {
   const ref = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -21,16 +30,16 @@ export function EditableText({ value, onChange, editMode, tag: Tag = "span", cla
   }, [value, editMode]);
 
   if (!editMode) {
-    return <Tag className={className}>{value}</Tag>;
+    return <Tag className={className} style={style}>{value}</Tag>;
   }
 
   return (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     <Tag
-      ref={ref as any}
+      ref={ref as Ref<HTMLElement>}
       contentEditable
       suppressContentEditableWarning
       className={`${className} outline-none ring-2 ring-orange-400 ring-offset-1 rounded cursor-text focus:ring-orange-500 transition-shadow`}
+      style={style}
       onBlur={(e: React.FocusEvent<HTMLElement>) => {
         onChange(e.currentTarget.textContent ?? "");
       }}

@@ -1,19 +1,63 @@
 "use client";
 
+import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { useNewsletterData } from "@/hooks/useNewsletterData";
-import type { NewsletterDesignDefinition } from "@/lib/newsletterDesigns";
+import {
+  getNewsletterThemeHref,
+  type NewsletterDesignDefinition,
+  type NewsletterDesignSlug,
+} from "@/lib/newsletterDesigns";
+import { EditableImage } from "./EditableImage";
 import { EditableText } from "./EditableText";
 import { SectionHeader } from "./SectionHeader";
 import { StatCard } from "./StatCard";
 import { SchoolCard } from "./SchoolCard";
 import { PageFooter } from "./PageShell";
+import { ThemeSwitcherModal } from "./ThemeSwitcherModal";
 
 interface NewsletterProps {
   design: NewsletterDesignDefinition;
 }
 
 export default function Newsletter({ design }: NewsletterProps) {
-  const { data, editMode, setEditMode, updateField, resetToDefault, loaded } = useNewsletterData();
+  const router = useRouter();
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const [isThemePending, startThemeTransition] = useTransition();
+  const {
+    clearImage,
+    data,
+    editMode,
+    errorMessage,
+    isUploading,
+    loaded,
+    resetToDefault,
+    saveState,
+    setEditMode,
+    updateField,
+    uploadImage,
+  } = useNewsletterData();
+
+  useEffect(() => {
+    if (!isThemeModalOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsThemeModalOpen(false);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isThemeModalOpen]);
 
   if (!loaded) {
     return (
@@ -24,6 +68,19 @@ export default function Newsletter({ design }: NewsletterProps) {
   }
 
   const e = editMode;
+  const syncBadge = getSyncBadge(saveState, errorMessage);
+
+  function handleThemeSelect(slug: NewsletterDesignSlug) {
+    setIsThemeModalOpen(false);
+
+    if (slug === design.slug) {
+      return;
+    }
+
+    startThemeTransition(() => {
+      router.replace(getNewsletterThemeHref(slug), { scroll: false });
+    });
+  }
 
   return (
     <>
@@ -31,24 +88,48 @@ export default function Newsletter({ design }: NewsletterProps) {
       <div className={`screen-only fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 py-2 text-xs font-semibold ${design.screen.toolbar}`}>
         <span className="text-gray-400">TTI Newsletter · {data.meta.quarter} {data.meta.year}</span>
         <div className="flex items-center gap-3">
+          <span
+            className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] ${syncBadge.className}`}
+            title={errorMessage ?? undefined}
+          >
+            {syncBadge.label}
+          </span>
+          <button
+            type="button"
+            aria-expanded={isThemeModalOpen}
+            aria-haspopup="dialog"
+            disabled={isThemePending}
+            onClick={() => setIsThemeModalOpen(true)}
+            className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${design.screen.editInactive} ${
+              isThemePending ? "cursor-wait opacity-70" : ""
+            }`}
+          >
+            Theme: {design.name}
+          </button>
           {editMode && (
-            <button onClick={resetToDefault} className={`transition-colors ${design.screen.reset}`}>
+            <button
+              type="button"
+              onClick={resetToDefault}
+              className={`transition-colors ${design.screen.reset}`}
+            >
               Reset defaults
             </button>
           )}
           <button
+            type="button"
             onClick={() => setEditMode(!e)}
             className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
               editMode ? design.screen.editActive : design.screen.editInactive
             }`}
           >
-            {editMode ? "✓ Done editing" : "✏ Edit content"}
+            {editMode ? "Done editing" : "Edit content"}
           </button>
           <button
+            type="button"
             onClick={() => window.print()}
             className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${design.screen.print}`}
           >
-            ⬇ Save as PDF
+            Save as PDF
           </button>
         </div>
       </div>
@@ -83,9 +164,14 @@ export default function Newsletter({ design }: NewsletterProps) {
               <div className={`w-[9mm] h-[9mm] rounded-full flex items-center justify-center text-white font-black text-[8pt] ${design.cover.logoDot}`}>
                 TTI
               </div>
-              <span className="text-white/60 text-[8pt] font-semibold uppercase tracking-widest">
-                Tererai Trent International Foundation
-              </span>
+              <EditableText
+                value={data.meta.organizationName}
+                onChange={v => updateField("meta.organizationName", v)}
+                editMode={e}
+                tag="span"
+                className="text-white/60 text-[8pt] font-semibold uppercase tracking-widest"
+                multiline={false}
+              />
             </div>
 
             {/* Quarter badge */}
@@ -100,8 +186,23 @@ export default function Newsletter({ design }: NewsletterProps) {
 
             {/* Main headline */}
             <h1 className="text-white font-black leading-none mb-6" style={{ fontSize: "52pt", letterSpacing: "-1px" }}>
-              QUARTERLY<br />
-              <span style={{ color: design.cover.headlineAccent }}>NEWSLETTER</span>
+              <EditableText
+                value={data.meta.newsletterTitleLead}
+                onChange={v => updateField("meta.newsletterTitleLead", v)}
+                editMode={e}
+                tag="span"
+                multiline={false}
+              />
+              <br />
+              <EditableText
+                value={data.meta.newsletterTitleAccent}
+                onChange={v => updateField("meta.newsletterTitleAccent", v)}
+                editMode={e}
+                tag="span"
+                multiline={false}
+                className="inline-block"
+                style={{ color: design.cover.headlineAccent }}
+              />
             </h1>
 
             {/* Tagline */}
@@ -151,7 +252,14 @@ export default function Newsletter({ design }: NewsletterProps) {
         <div className="page bg-white">
           {/* Teal header band */}
           <div className="absolute top-0 inset-x-0 h-[18mm] bg-teal-600 flex items-center px-[12mm] justify-between">
-            <span className="text-white text-[8pt] font-black uppercase tracking-widest">Tererai Trent International Foundation</span>
+            <EditableText
+              value={data.meta.organizationName}
+              onChange={v => updateField("meta.organizationName", v)}
+              editMode={e}
+              tag="span"
+              className="text-white text-[8pt] font-black uppercase tracking-widest"
+              multiline={false}
+            />
             <div className="w-[8mm] h-[8mm] rounded-full bg-white/20 flex items-center justify-center text-white text-[7pt] font-black">TTI</div>
           </div>
 
@@ -164,12 +272,31 @@ export default function Newsletter({ design }: NewsletterProps) {
             <div className="grid grid-cols-[52mm_1fr] gap-[8mm]">
               {/* Photo column */}
               <div>
-                <div className="w-full aspect-[3/4] bg-gradient-to-br from-gray-200 to-gray-300 rounded overflow-hidden flex flex-col justify-end mb-3">
-                  <div className="bg-teal-600 text-white px-3 py-2">
+                <EditableImage
+                  alt={`${data.directorMessage.name} portrait`}
+                  className="mb-3 w-full overflow-hidden rounded"
+                  editMode={e}
+                  image={data.directorMessage.image}
+                  imageClassName="h-full w-full object-cover"
+                  onRemove={() => clearImage("directorMessage.image")}
+                  onUpload={file => uploadImage("directorMessage.image", file)}
+                  placeholder={
+                    <div className="flex aspect-[3/4] w-full flex-col items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 text-center">
+                      <div className="mb-3 rounded-full border border-white/70 bg-white/70 px-4 py-1.5 text-[7pt] font-black uppercase tracking-[0.28em] text-gray-500">
+                        Director photo
+                      </div>
+                      <p className="max-w-[34mm] text-[8pt] font-medium leading-relaxed text-gray-500">
+                        Upload a portrait for the director message.
+                      </p>
+                    </div>
+                  }
+                  uploading={isUploading("directorMessage.image")}
+                >
+                  <div className="absolute inset-x-0 bottom-0 bg-teal-600 text-white px-3 py-2">
                     <EditableText value={data.directorMessage.name} onChange={v => updateField("directorMessage.name", v)} editMode={e} tag="p" className="font-black text-[9pt]" multiline={false} />
                     <EditableText value={data.directorMessage.title} onChange={v => updateField("directorMessage.title", v)} editMode={e} tag="p" className="text-teal-200 text-[7.5pt]" multiline={false} />
                   </div>
-                </div>
+                </EditableImage>
                 {/* Decorative element */}
                 <div className="flex gap-1.5 mt-3">
                   <div className="h-[3px] flex-1 bg-orange-500" />
@@ -207,7 +334,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               </div>
             </div>
           </div>
-          <PageFooter pageNum={1} section="Director's Message" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={1} section="Director's Message" />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -267,7 +394,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               <EditableText value={data.about.purpose} onChange={v => updateField("about.purpose", v)} editMode={e} tag="p" className="text-white/90 text-[9.5pt] leading-relaxed" />
             </div>
           </div>
-          <PageFooter pageNum={2} section="About TTI Foundation" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={2} section="About TTI Foundation" />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -319,7 +446,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               </div>
             </div>
           </div>
-          <PageFooter pageNum={3} section="Executive Summary" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={3} section="Executive Summary" />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -380,7 +507,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               </div>
             </div>
           </div>
-          <PageFooter pageNum={4} section="Scholarship & Education" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={4} section="Scholarship & Education" />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -426,7 +553,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               ))}
             </div>
           </div>
-          <PageFooter pageNum={5} section="School-Based Impact" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={5} section="School-Based Impact" />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -487,7 +614,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               </div>
             </div>
           </div>
-          <PageFooter pageNum={6} section="Innovation & Technology" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={6} section="Innovation & Technology" />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -507,11 +634,30 @@ export default function Newsletter({ design }: NewsletterProps) {
             <div className="grid grid-cols-[55mm_1fr] gap-[8mm]">
               {/* Photo */}
               <div>
-                <div className="w-full bg-gradient-to-br from-gray-200 to-gray-300 rounded overflow-hidden flex flex-col justify-end" style={{ aspectRatio: "4/5" }}>
-                  <div className="bg-gray-900/85 text-white px-3 py-2">
+                <EditableImage
+                  alt={`${data.beneficiaryStory.name} portrait`}
+                  className="w-full overflow-hidden rounded"
+                  editMode={e}
+                  image={data.beneficiaryStory.image}
+                  imageClassName="h-full w-full object-cover"
+                  onRemove={() => clearImage("beneficiaryStory.image")}
+                  onUpload={file => uploadImage("beneficiaryStory.image", file)}
+                  placeholder={
+                    <div className="flex w-full flex-col items-center justify-center bg-gradient-to-br from-gray-200 to-gray-300 text-center" style={{ aspectRatio: "4/5" }}>
+                      <div className="mb-3 rounded-full border border-white/70 bg-white/70 px-4 py-1.5 text-[7pt] font-black uppercase tracking-[0.28em] text-gray-500">
+                        Story photo
+                      </div>
+                      <p className="max-w-[38mm] text-[8pt] font-medium leading-relaxed text-gray-500">
+                        Upload a beneficiary portrait or supporting image.
+                      </p>
+                    </div>
+                  }
+                  uploading={isUploading("beneficiaryStory.image")}
+                >
+                  <div className="absolute inset-x-0 bottom-0 bg-gray-900/85 text-white px-3 py-2">
                     <EditableText value={data.beneficiaryStory.name} onChange={v => updateField("beneficiaryStory.name", v)} editMode={e} tag="p" className="font-black text-[9pt] text-center" multiline={false} />
                   </div>
-                </div>
+                </EditableImage>
                 {/* Pull quote decoration */}
                 <div className="mt-4 text-teal-400 font-black" style={{ fontSize: "36pt", lineHeight: 1 }}>&ldquo;</div>
               </div>
@@ -533,7 +679,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               </div>
             </div>
           </div>
-          <PageFooter pageNum={7} section="Beneficiary Story" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={7} section="Beneficiary Story" />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -596,7 +742,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               </div>
             </div>
           </div>
-          <PageFooter pageNum={8} section="Highlights & Conclusion" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={8} section="Highlights & Conclusion" />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -623,12 +769,36 @@ export default function Newsletter({ design }: NewsletterProps) {
           <div className="absolute top-[34mm] left-[12mm] right-[12mm] bottom-[16mm] grid grid-cols-2 gap-[4mm]">
             {data.photos.slice(0, 6).map((photo, i) => (
               <div key={i} className="relative flex flex-col justify-end overflow-hidden rounded-[4mm] border border-white/10 bg-slate-800 shadow-[0_16px_30px_rgba(15,23,42,0.25)]">
-                <div className="absolute inset-0 relative flex items-center justify-center px-[5mm]" style={{ background: design.photo.cardGradient }}>
-                  <span className={`absolute rounded-full border border-white/10 px-[4mm] py-[1.5mm] text-center text-[6.2pt] font-black uppercase tracking-[0.32em] ${design.photo.placeholderText}`}>
-                    {photo.placeholder.replace(/-/g, " ")}
-                  </span>
-                  <span className="text-white/10 text-[24pt]">📷</span>
-                </div>
+                <EditableImage
+                  alt={photo.caption}
+                  className="absolute inset-0"
+                  controlsClassName="right-[4mm] top-[4mm]"
+                  editMode={e}
+                  image={photo.image}
+                  imageClassName="absolute inset-0 h-full w-full object-cover"
+                  onRemove={() => clearImage(`photos.${i}.image`)}
+                  onUpload={file => uploadImage(`photos.${i}.image`, file)}
+                  placeholder={
+                    <div className="absolute inset-0 flex items-center justify-center px-[5mm]" style={{ background: design.photo.cardGradient }}>
+                      <span className={`absolute rounded-full border border-white/10 px-[4mm] py-[1.5mm] text-center text-[6.2pt] font-black uppercase tracking-[0.32em] ${design.photo.placeholderText}`}>
+                        {photo.placeholder.replace(/-/g, " ")}
+                      </span>
+                      <div className="text-center">
+                        <div className="mb-2 text-[7pt] font-black uppercase tracking-[0.3em] text-white/40">
+                          Photo slot
+                        </div>
+                        <p className="max-w-[34mm] text-[7.5pt] leading-relaxed text-white/45">
+                          Upload a field image for this caption.
+                        </p>
+                      </div>
+                    </div>
+                  }
+                  uploading={isUploading(`photos.${i}.image`)}
+                >
+                  {photo.image.url && (
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                  )}
+                </EditableImage>
                 <div className={`relative mt-auto border-t px-[4mm] py-[3.5mm] ${design.photo.captionPanel}`}>
                   <EditableText value={photo.caption}
                     onChange={v => { const n = data.photos.map((p, j) => j === i ? { ...p, caption: v } : p); updateField("photos", n); }}
@@ -638,7 +808,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               </div>
             ))}
           </div>
-          <PageFooter pageNum={9} section="In Pictures" theme={design.photo.footerTheme} />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={9} section="In Pictures" theme={design.photo.footerTheme} />
         </div>
 
         {/* ════════════════════════════════════════════════════════
@@ -678,12 +848,12 @@ export default function Newsletter({ design }: NewsletterProps) {
                 className="text-[13pt] font-black leading-tight"
                 multiline={false}
               />
-              <p className={`mt-2 text-[7.6pt] leading-relaxed ${design.thankYou.preparedByNote}`}>Tererai Trent International Foundation</p>
+              <p className={`mt-2 text-[7.6pt] leading-relaxed ${design.thankYou.preparedByNote}`}>{data.meta.organizationName}</p>
             </div>
           </div>
 
           <div className="page-content flex flex-col gap-[6mm]" style={{ top: "62mm" }}>
-            <div className="grid flex-1 grid-cols-[1.2fr_0.8fr] gap-[8mm]">
+            <div className="grid grid-cols-[1.2fr_0.8fr] gap-[8mm]">
               <div className={`rounded-[4mm] border px-[7mm] py-[7mm] ${design.thankYou.messageCard}`}>
                 <div className="space-y-4">
                   {data.thankYou.paragraphs.map((para, i) => (
@@ -740,7 +910,7 @@ export default function Newsletter({ design }: NewsletterProps) {
               </div>
             </div>
           </div>
-          <PageFooter pageNum={10} section="Thank You & Contacts" />
+          <PageFooter organizationName={data.meta.organizationName} pageNum={10} section="Thank You & Contacts" />
         </div>
 
       </div>
@@ -751,6 +921,41 @@ export default function Newsletter({ design }: NewsletterProps) {
           In the print dialog: set <strong>Margins → None</strong> and enable <strong>Background graphics</strong> for full color.
         </div>
       )}
+      <ThemeSwitcherModal
+        currentTheme={design.slug}
+        isOpen={isThemeModalOpen}
+        isPending={isThemePending}
+        onClose={() => setIsThemeModalOpen(false)}
+        onSelect={handleThemeSelect}
+      />
     </>
   );
+}
+
+function getSyncBadge(saveState: "loading" | "idle" | "saving" | "saved" | "error", errorMessage: string | null) {
+  if (saveState === "loading") {
+    return {
+      className: "bg-white/10 text-white/70",
+      label: "Loading",
+    };
+  }
+
+  if (saveState === "saving") {
+    return {
+      className: "bg-amber-500/15 text-amber-200",
+      label: "Saving",
+    };
+  }
+
+  if (saveState === "saved" || saveState === "idle") {
+    return {
+      className: "bg-emerald-500/15 text-emerald-200",
+      label: "Synced",
+    };
+  }
+
+  return {
+    className: "bg-red-500/15 text-red-200",
+    label: errorMessage ? "Sync error" : "Offline",
+  };
 }

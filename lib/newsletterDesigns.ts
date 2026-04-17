@@ -4,7 +4,6 @@ export interface NewsletterDesignDefinition {
   slug: NewsletterDesignSlug;
   name: string;
   description: string;
-  route: `/designs/${NewsletterDesignSlug}`;
   previewAccent: string;
   screen: {
     toolbar: string;
@@ -66,7 +65,6 @@ export const newsletterDesigns: NewsletterDesignDefinition[] = [
     slug: "editorial",
     name: "Editorial Print",
     description: "The bold magazine-style layout currently used for the newsletter, tuned for strong print presence.",
-    route: "/designs/editorial",
     previewAccent: "from-slate-900 via-slate-800 to-orange-500",
     screen: {
       toolbar: "bg-gray-900 text-white",
@@ -129,7 +127,6 @@ export const newsletterDesigns: NewsletterDesignDefinition[] = [
     slug: "terracotta",
     name: "Terracotta Folio",
     description: "A warmer, softer print treatment with clay, cream, and forest tones for a more report-like feel.",
-    route: "/designs/terracotta",
     previewAccent: "from-amber-200 via-orange-300 to-emerald-700",
     screen: {
       toolbar: "bg-stone-100 text-stone-900 border-b border-stone-200",
@@ -194,4 +191,8 @@ export const defaultNewsletterDesign = newsletterDesigns[0];
 
 export function getNewsletterDesign(slug: string) {
   return newsletterDesigns.find((design) => design.slug === slug);
+}
+
+export function getNewsletterThemeHref(slug: NewsletterDesignSlug) {
+  return slug === defaultNewsletterDesign.slug ? "/" : `/?theme=${slug}`;
 }

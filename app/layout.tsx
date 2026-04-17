@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "TTI Foundation Newsletter Studio",
-  description: "Route-based print newsletter designs for the Tererai Trent International Foundation quarterly report.",
+  description:
+    "Single-route print newsletter studio with switchable themes for the Tererai Trent International Foundation quarterly report.",
 };
 
 export default function RootLayout({
