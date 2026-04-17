@@ -172,6 +172,183 @@ export default function NewsletterResilience({
       </div>
 
       <div className={`pb-12 ${editMode ? "bg-orange-50" : "bg-stone-200"}`}>
+        <div className="page" style={{ background: FOREST_DEEP }}>
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at top left, rgba(216,161,63,0.14), transparent 24%), radial-gradient(circle at 82% 18%, rgba(201,111,77,0.2), transparent 20%), linear-gradient(145deg, rgba(13,42,35,0.98), rgba(23,63,53,0.94))",
+            }}
+          />
+          <div className="absolute inset-x-0 top-0 h-[4mm]" style={{ background: CLAY }} />
+          <div
+            className="absolute -right-[28mm] top-[18mm] h-[110mm] w-[110mm] rounded-full"
+            style={{ background: "rgba(216,161,63,0.08)" }}
+          />
+          <div
+            className="absolute bottom-[-26mm] left-[-18mm] h-[104mm] w-[104mm] rounded-full"
+            style={{ background: "rgba(201,111,77,0.1)" }}
+          />
+
+          <div
+            className="absolute right-[18mm] top-[54mm] h-[146mm] w-[78mm] rounded-[36mm] border"
+            style={{ borderColor: "rgba(255,255,255,0.08)" }}
+          />
+          <div
+            className="absolute right-[28mm] top-[72mm] h-[118mm] w-[52mm] rounded-[28mm]"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255,250,243,0.95), rgba(244,237,227,0.76))",
+              boxShadow: "0 30px 60px rgba(7,19,16,0.2)",
+            }}
+          />
+          <div
+            className="absolute right-[66mm] top-[86mm] h-[20mm] w-[20mm] rounded-full border"
+            style={{ borderColor: "rgba(255,255,255,0.18)" }}
+          />
+          <div
+            className="absolute right-[14mm] top-[142mm] h-[30mm] w-[30mm] rounded-full"
+            style={{ background: "rgba(201,111,77,0.82)" }}
+          />
+          <div
+            className="absolute right-[54mm] bottom-[22mm] h-[40mm] w-[40mm] rounded-full border"
+            style={{ borderColor: "rgba(247,200,141,0.26)" }}
+          />
+          <div
+            className="absolute inset-0 px-[14mm] pb-[16mm] pt-[18mm]"
+            style={{ background: "linear-gradient(90deg, rgba(13,42,35,0.16), transparent 58%)" }}
+          >
+            <div className="flex items-start justify-between gap-[8mm]">
+              <div className="flex items-center gap-4">
+                <EditableImage
+                  alt={`${data.meta.organizationName} logo`}
+                  className="h-[18mm] w-[44mm]"
+                  controlsClassName="right-0 top-0"
+                  editMode={e}
+                  image={data.meta.logo}
+                  imageClassName="h-full w-full object-contain"
+                  onRemove={() => clearImage("meta.logo")}
+                  onUpload={(file) => uploadImage("meta.logo", file)}
+                  placeholder={
+                    <div
+                      className="flex h-full w-full items-center justify-center rounded-[5mm] border text-[8pt] font-black uppercase tracking-[0.34em] text-white"
+                      style={{
+                        background: "rgba(255,255,255,0.04)",
+                        borderColor: "rgba(255,255,255,0.1)",
+                      }}
+                    >
+                      TTI
+                    </div>
+                  }
+                  uploading={isUploading("meta.logo")}
+                />
+                <EditableText
+                  value={data.meta.organizationName}
+                  onChange={(value) => updateField("meta.organizationName", value)}
+                  editMode={e}
+                  tag="p"
+                  multiline={false}
+                  className="max-w-[74mm] text-[7.4pt] font-black uppercase tracking-[0.34em]"
+                  style={{ color: "rgba(255,255,255,0.65)" }}
+                />
+              </div>
+
+              <div
+                className="rounded-full border px-4 py-2 text-[6.4pt] font-black uppercase tracking-[0.3em]"
+                style={{
+                  borderColor: "rgba(255,255,255,0.12)",
+                  background: "rgba(255,255,255,0.04)",
+                  color: "rgba(255,255,255,0.7)",
+                }}
+              >
+                <EditableText
+                  value={data.meta.quarter}
+                  onChange={(value) => updateField("meta.quarter", value)}
+                  editMode={e}
+                  tag="span"
+                  multiline={false}
+                />
+                {" • "}
+                <EditableText
+                  value={data.meta.year}
+                  onChange={(value) => updateField("meta.year", value)}
+                  editMode={e}
+                  tag="span"
+                  multiline={false}
+                />
+              </div>
+            </div>
+
+            <div className="flex h-[calc(100%-18mm)] flex-col justify-center pb-[8mm]">
+              <div className="max-w-[100mm]">
+                <div>
+                  <div className="mb-5 flex items-center gap-3">
+                    <div className="h-[1px] w-[12mm]" style={{ background: CLAY }} />
+                    <EditableText
+                      value={data.meta.coverEyebrow}
+                      onChange={(value) => updateField("meta.coverEyebrow", value)}
+                      editMode={e}
+                      tag="p"
+                      multiline={false}
+                      className="text-[6.8pt] font-black uppercase tracking-[0.34em]"
+                      style={{ color: "#f7c88d" }}
+                    />
+                  </div>
+
+                  <EditableText
+                    value={data.meta.newsletterTitleLead}
+                    onChange={(value) => updateField("meta.newsletterTitleLead", value)}
+                    editMode={e}
+                    tag="h1"
+                    multiline={false}
+                    className="max-w-[96mm] text-[50pt] font-black leading-[0.88] tracking-[-0.05em]"
+                    style={{ color: "#fffaf3", fontFamily: HEADING_FONT }}
+                  />
+                  <EditableText
+                    value={data.meta.newsletterTitleAccent}
+                    onChange={(value) => updateField("meta.newsletterTitleAccent", value)}
+                    editMode={e}
+                    tag="h1"
+                    multiline={false}
+                    className="mt-1 max-w-[96mm] text-[50pt] font-black leading-[0.88] tracking-[-0.05em]"
+                    style={{ color: "#f7c88d", fontFamily: HEADING_FONT }}
+                  />
+
+                  <EditableText
+                    value={data.meta.tagline}
+                    onChange={(value) => updateField("meta.tagline", value)}
+                    editMode={e}
+                    tag="p"
+                    multiline={false}
+                    className="mt-6 max-w-[74mm] text-[8.1pt] font-semibold uppercase tracking-[0.3em]"
+                    style={{ color: "rgba(255,255,255,0.6)" }}
+                  />
+
+                </div>
+              </div>
+
+              <div className="mt-auto flex items-end justify-between gap-[8mm]">
+                <div className="flex items-center gap-3">
+                  <div className="h-[1px] w-[24mm]" style={{ background: "rgba(255,255,255,0.16)" }} />
+                  <div className="h-[6px] w-[6px] rounded-full" style={{ background: CLAY }} />
+                  <div className="h-[1px] w-[36mm]" style={{ background: "rgba(247,200,141,0.22)" }} />
+                </div>
+
+                <div
+                  className="rounded-full border px-4 py-2 text-[6pt] font-black uppercase tracking-[0.3em]"
+                  style={{
+                    borderColor: "rgba(255,255,255,0.1)",
+                    background: "rgba(255,255,255,0.04)",
+                    color: "#f7c88d",
+                  }}
+                >
+                  Resilience Edition
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="page" style={{ background: SAND }}>
           <div
             className="absolute inset-0"
@@ -417,7 +594,7 @@ export default function NewsletterResilience({
             </div>
           </div>
 
-          <PageFooter organizationName={org} pageNum={1} section="Cover" />
+          <PageFooter organizationName={org} pageNum={1} section="Opening Brief" />
         </div>
 
         <div className="page" style={{ background: PAPER }}>
