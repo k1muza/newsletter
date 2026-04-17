@@ -1,7 +1,10 @@
-export type NewsletterDesignSlug = "editorial" | "terracotta";
+// ── Themes ────────────────────────────────────────────────────────────────────
+// A "theme" changes the visual look of a report without altering its structure.
+
+export type NewsletterThemeSlug = "editorial" | "terracotta";
 
 export interface NewsletterDesignDefinition {
-  slug: NewsletterDesignSlug;
+  slug: NewsletterThemeSlug;
   name: string;
   description: string;
   previewAccent: string;
@@ -60,11 +63,11 @@ export interface NewsletterDesignDefinition {
   };
 }
 
-export const newsletterDesigns: NewsletterDesignDefinition[] = [
+export const newsletterThemes: NewsletterDesignDefinition[] = [
   {
     slug: "editorial",
     name: "Editorial Print",
-    description: "The bold magazine-style layout currently used for the newsletter, tuned for strong print presence.",
+    description: "Bold magazine-style, tuned for strong print presence.",
     previewAccent: "from-slate-900 via-slate-800 to-orange-500",
     screen: {
       toolbar: "bg-gray-900 text-white",
@@ -126,7 +129,7 @@ export const newsletterDesigns: NewsletterDesignDefinition[] = [
   {
     slug: "terracotta",
     name: "Terracotta Folio",
-    description: "A warmer, softer print treatment with clay, cream, and forest tones for a more report-like feel.",
+    description: "Warmer, softer tones — clay, cream, and forest for a report-like feel.",
     previewAccent: "from-amber-200 via-orange-300 to-emerald-700",
     screen: {
       toolbar: "bg-stone-100 text-stone-900 border-b border-stone-200",
@@ -187,12 +190,47 @@ export const newsletterDesigns: NewsletterDesignDefinition[] = [
   },
 ];
 
-export const defaultNewsletterDesign = newsletterDesigns[0];
+export const defaultNewsletterTheme = newsletterThemes[0];
 
-export function getNewsletterDesign(slug: string) {
-  return newsletterDesigns.find((design) => design.slug === slug);
+export function getNewsletterTheme(slug: string): NewsletterDesignDefinition | undefined {
+  return newsletterThemes.find((t) => t.slug === slug);
 }
 
-export function getNewsletterThemeHref(slug: NewsletterDesignSlug) {
-  return slug === defaultNewsletterDesign.slug ? "/" : `/?theme=${slug}`;
+/** URL for switching theme within the quarterly-newsletter report. */
+export function getNewsletterThemeHref(slug: NewsletterThemeSlug): string {
+  return slug === "editorial" ? "/design/quarterly" : `/design/quarterly?theme=${slug}`;
 }
+
+// ── Reports ───────────────────────────────────────────────────────────────────
+// A "report" is a distinct structure / layout. Each lives at its own route.
+
+export interface NewsletterReport {
+  slug: string;
+  name: string;
+  tagline: string;
+  description: string;
+  previewAccent: string;
+  /** Number of theme variants available for this report. */
+  themeCount: number;
+}
+
+export const newsletterReports: NewsletterReport[] = [
+  {
+    slug: "quarterly",
+    name: "Quarterly Newsletter",
+    tagline: "10-page magazine-style print layout",
+    description:
+      "Bold, dense editorial layout for quarterly impact reports. Supports two visual themes: Editorial Print and Terracotta Folio.",
+    previewAccent: "from-slate-900 via-slate-800 to-orange-500",
+    themeCount: 2,
+  },
+  {
+    slug: "sleek",
+    name: "Impact Brief",
+    tagline: "6-page clean minimal layout",
+    description:
+      "A minimal, spacious layout with bold type hierarchy and a navy-and-amber palette — designed for focused impact storytelling.",
+    previewAccent: "from-[#1e3a5f] via-[#2d5a8e] to-amber-400",
+    themeCount: 1,
+  },
+];

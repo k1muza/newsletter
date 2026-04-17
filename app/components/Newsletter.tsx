@@ -1,12 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useNewsletterData } from "@/hooks/useNewsletterData";
 import {
   getNewsletterThemeHref,
   type NewsletterDesignDefinition,
-  type NewsletterDesignSlug,
+  type NewsletterThemeSlug,
 } from "@/lib/newsletterDesigns";
 import { EditableImage } from "./EditableImage";
 import { EditableText } from "./EditableText";
@@ -70,7 +71,7 @@ export default function Newsletter({ design }: NewsletterProps) {
   const e = editMode;
   const syncBadge = getSyncBadge(saveState, errorMessage);
 
-  function handleThemeSelect(slug: NewsletterDesignSlug) {
+  function handleThemeSelect(slug: NewsletterThemeSlug) {
     setIsThemeModalOpen(false);
 
     if (slug === design.slug) {
@@ -86,7 +87,12 @@ export default function Newsletter({ design }: NewsletterProps) {
     <>
       {/* ── Screen toolbar ─────────────────────────────────────── */}
       <div className={`screen-only fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 py-2 text-xs font-semibold ${design.screen.toolbar}`}>
-        <span className="text-gray-400">TTI Newsletter · {data.meta.quarter} {data.meta.year}</span>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="rounded-full border border-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-white/50 transition hover:border-white/30 hover:text-white/80">
+            ← Reports
+          </Link>
+          <span className="text-gray-400">TTI Newsletter · {data.meta.quarter} {data.meta.year}</span>
+        </div>
         <div className="flex items-center gap-3">
           <span
             className={`rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em] ${syncBadge.className}`}
