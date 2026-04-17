@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+:root {
+  --tti-orange: #f97316;
+  --tti-teal: #0d9488;
+  --tti-dark: #1a1a2e;
+  --page-w: 210mm;
+  --page-h: 297mm;
+}
+
+html {
+  scroll-behavior: smooth;
+  background:
+    radial-gradient(circle at top, #f8fafc 0, #e2e8f0 52%, #cbd5e1 100%);
+}
+
+body {
+  font-family: var(--font-geist-sans), "Helvetica Neue", Arial, sans-serif;
+  background: transparent;
+  color: #1a1a2e;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: var(--page-w);
+  height: var(--page-h);
+  position: relative;
+  overflow: hidden;
+  background: #fff;
+  margin: 0 auto 24px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 2.5mm;
+  box-shadow:
+    0 26px 70px rgba(15, 23, 42, 0.16),
+    0 8px 22px rgba(15, 23, 42, 0.08);
+  isolation: isolate;
+  page-break-inside: avoid;
+}
+
+.page::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.page-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10mm;
+  display: flex;
+  align-items: center;
+  padding: 0 12mm;
+}
+
+.page-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 10mm;
+  padding: 12mm 12mm 0;
+  overflow: hidden;
+  z-index: 1;
+}
+
+[contenteditable] {
+  outline: none;
+  border-radius: 2px;
+  transition: box-shadow 0.15s;
+}
+
+[contenteditable]:focus {
+  box-shadow: 0 0 0 2px var(--tti-orange);
+}
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html {
+    background: transparent;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .screen-only {
+    display: none !important;
+  }
+
+  .page {
+    width: 210mm;
+    height: 297mm;
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    page-break-after: always;
+    break-after: page;
+    overflow: hidden;
+  }
+
+  .page::before {
+    display: none;
+  }
+
+  .page:last-of-type {
+    page-break-after: auto;
+    break-after: auto;
+  }
+}
