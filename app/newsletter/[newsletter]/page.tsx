@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Newsletter from "@/app/components/Newsletter";
+import NewsletterResilience from "@/app/components/NewsletterResilience";
 import NewsletterSleek from "@/app/components/NewsletterSleek";
 import {
   defaultNewsletterTheme,
@@ -34,6 +35,10 @@ export default async function NewsletterPage({ params, searchParams }: Props) {
 
   if (report.slug === "sleek") {
     return <NewsletterSleek newsletterSlug={report.slug} />;
+  }
+
+  if (report.slug === "resilience") {
+    return <NewsletterResilience newsletterSlug={report.slug} />;
   }
 
   const design = getNewsletterTheme(themeSlug ?? "") ?? defaultNewsletterTheme;
