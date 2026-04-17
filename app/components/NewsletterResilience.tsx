@@ -275,7 +275,7 @@ export default function NewsletterResilience({
             className="absolute inset-0 px-[14mm] pb-[16mm] pt-[18mm]"
             style={{ background: "linear-gradient(90deg, rgba(13,42,35,0.16), transparent 58%)" }}
           >
-            <div className="flex items-start justify-between gap-[8mm]">
+            <div className="flex items-start justify-between mb-8 gap-[8mm]">
               <div className="flex items-center gap-4">
                 <EditableImage
                   alt={`${data.meta.organizationName} logo`}
