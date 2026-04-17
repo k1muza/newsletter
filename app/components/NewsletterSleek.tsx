@@ -5,6 +5,7 @@ import { useNewsletterData } from "@/hooks/useNewsletterData";
 import type { NewsletterSlug } from "@/lib/newsletterDesigns";
 import { EditableText } from "./EditableText";
 import { EditableImage } from "./EditableImage";
+import { NewsletterLogo } from "./NewsletterLogo";
 import { PageFooter } from "./PageShell";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
@@ -139,12 +140,26 @@ export default function NewsletterSleek({ newsletterSlug }: NewsletterSleekProps
           >
             {/* Logo */}
             <div className="flex flex-col items-center gap-2">
-              <div
-                className="flex h-10 w-10 items-center justify-center rounded-full text-[7.5pt] font-black text-white"
-                style={{ background: AMBER }}
-              >
-                TTI
-              </div>
+              <NewsletterLogo
+                alt={`${org} logo`}
+                className="h-[14mm] w-[30mm]"
+                controlsClassName="right-0 top-0"
+                editable
+                editMode={e}
+                image={data.meta.logo}
+                imageClassName="h-full w-full object-contain"
+                onRemove={() => clearImage("meta.logo")}
+                onUpload={file => uploadImage("meta.logo", file)}
+                placeholder={
+                  <div
+                    className="flex h-full w-full items-center justify-center rounded-[4mm] text-[7.5pt] font-black text-white"
+                    style={{ background: AMBER }}
+                  >
+                    TTI
+                  </div>
+                }
+                uploading={isUploading("meta.logo")}
+              />
               <div className="text-center text-[5.8pt] font-bold uppercase tracking-[0.3em]"
                    style={{ color: "rgba(255,255,255,0.35)", maxWidth: "38mm" }}>
                 <EditableText
@@ -189,9 +204,15 @@ export default function NewsletterSleek({ newsletterSlug }: NewsletterSleekProps
             {/* Eyebrow */}
             <div className="mb-6 flex items-center gap-2">
               <div className="h-px w-5" style={{ background: AMBER }} />
-              <span className="text-[7pt] font-black uppercase tracking-[0.3em]" style={{ color: AMBER }}>
-                Quarterly Report
-              </span>
+              <EditableText
+                value={data.meta.coverEyebrow}
+                onChange={v => updateField("meta.coverEyebrow", v)}
+                editMode={e}
+                tag="span"
+                multiline={false}
+                className="text-[7pt] font-black uppercase tracking-[0.3em]"
+                style={{ color: AMBER }}
+              />
             </div>
 
             {/* Headline */}
@@ -723,10 +744,20 @@ export default function NewsletterSleek({ newsletterSlug }: NewsletterSleekProps
 
           <div className="page-content flex flex-col items-center justify-center text-center">
             {/* TTI mark */}
-            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-full text-[9pt] font-black text-white"
-                 style={{ background: AMBER }}>
-              TTI
-            </div>
+            <NewsletterLogo
+              alt={`${org} logo`}
+              className="mb-6 h-[18mm] w-[32mm]"
+              image={data.meta.logo}
+              imageClassName="h-full w-full object-contain"
+              placeholder={
+                <div
+                  className="flex h-full w-full items-center justify-center rounded-[5mm] text-[9pt] font-black text-white"
+                  style={{ background: AMBER }}
+                >
+                  TTI
+                </div>
+              }
+            />
 
             <p className="mb-2 text-[7.5pt] font-black uppercase tracking-[0.4em]"
                style={{ color: "rgba(255,255,255,0.35)" }}>

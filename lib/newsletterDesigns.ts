@@ -2,7 +2,7 @@
 // A "theme" changes the visual look of a newsletter without altering its structure.
 
 export type NewsletterThemeSlug = "editorial" | "terracotta";
-export type NewsletterSlug = "quarterly" | "sleek";
+export type NewsletterSlug = "quarterly" | "sleek" | "resilience";
 
 export interface NewsletterDesignDefinition {
   slug: NewsletterThemeSlug;
@@ -237,6 +237,15 @@ export const newsletterReports: NewsletterReport[] = [
     description:
       "A minimal, spacious layout with bold type hierarchy and a navy-and-amber palette — designed for focused impact storytelling.",
     previewAccent: "from-[#1e3a5f] via-[#2d5a8e] to-amber-400",
+    themeCount: 1,
+  },
+  {
+    slug: "resilience",
+    name: "Rural Resilience",
+    tagline: "8-page warm editorial report",
+    description:
+      "A polished long-form layout for scholarship stories, self-sustaining schools, and infrastructure progress across rural communities.",
+    previewAccent: "from-[#1b4332] via-[#2d6a4f] to-[#f4a261]",
     themeCount: 1,
   },
 ];

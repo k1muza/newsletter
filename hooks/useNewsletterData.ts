@@ -24,7 +24,7 @@ interface UploadResponse {
 }
 
 export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
-  const [data, setData] = useState<NewsletterData>(() => mergeNewsletterData(null));
+  const [data, setData] = useState<NewsletterData>(() => mergeNewsletterData(null, documentId));
   const [editMode, setEditMode] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [saveState, setSaveState] = useState<SaveState>("loading");
@@ -87,14 +87,14 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
         }
 
         const payload = (await response.json()) as NewsletterResponse;
-        setData(mergeNewsletterData(payload.data ?? null));
+        setData(mergeNewsletterData(payload.data ?? null, documentId));
         setSaveState("idle");
       } catch (error) {
         if (controller.signal.aborted) {
           return;
         }
 
-        setData(mergeNewsletterData(null));
+        setData(mergeNewsletterData(null, documentId));
         setSaveState("error");
         setErrorMessage(getErrorMessage(error));
       } finally {
@@ -114,7 +114,7 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
         saveTimeoutRef.current = null;
       }
     };
-  }, [documentUrl]);
+  }, [documentId, documentUrl]);
 
   useEffect(() => {
     if (!loaded || !pendingSaveRef.current) {
@@ -163,10 +163,10 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
 
   const resetToDefault = useCallback(() => {
     pendingSaveRef.current = true;
-    setData(mergeNewsletterData(null));
+    setData(mergeNewsletterData(null, documentId));
     setSaveState("saving");
     setErrorMessage(null);
-  }, []);
+  }, [documentId]);
 
   const uploadImage = useCallback(
     async (path: string, file: File) => {

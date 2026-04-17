@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Newsletter from "@/app/components/Newsletter";
 import NewsletterSleek from "@/app/components/NewsletterSleek";
 import {
@@ -19,6 +19,13 @@ interface Props {
 
 export default async function NewsletterPage({ params, searchParams }: Props) {
   const { newsletter } = await params;
+  const { theme } = await searchParams;
+  const themeSlug = Array.isArray(theme) ? theme[0] : theme;
+
+  if (newsletter === "quartely") {
+    redirect(themeSlug ? `/newsletter/quarterly?theme=${themeSlug}` : "/newsletter/quarterly");
+  }
+
   const report = getNewsletterReport(newsletter);
 
   if (!report) {
@@ -29,8 +36,6 @@ export default async function NewsletterPage({ params, searchParams }: Props) {
     return <NewsletterSleek newsletterSlug={report.slug} />;
   }
 
-  const { theme } = await searchParams;
-  const themeSlug = Array.isArray(theme) ? theme[0] : theme;
   const design = getNewsletterTheme(themeSlug ?? "") ?? defaultNewsletterTheme;
 
   return <Newsletter design={design} newsletterSlug={report.slug} />;

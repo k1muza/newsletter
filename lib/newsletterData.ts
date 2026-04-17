@@ -1,4 +1,4 @@
-import { defaultData, type NewsletterData } from "@/lib/defaultData";
+import { getDefaultNewsletterData, type NewsletterData } from "@/lib/defaultData";
 
 export const DEFAULT_NEWSLETTER_DOCUMENT_ID = "default";
 export const NEWSLETTER_DATA_BUCKET = "newsletter-data";
@@ -14,8 +14,11 @@ export function getNewsletterContentPath(documentId: string) {
   return `${NEWSLETTER_STORAGE_DIRECTORY}/${documentId}/content.json`;
 }
 
-export function mergeNewsletterData(source?: Partial<NewsletterData> | null): NewsletterData {
-  return deepMerge(structuredClone(defaultData), source ?? {});
+export function mergeNewsletterData(
+  source?: Partial<NewsletterData> | null,
+  documentId?: string
+): NewsletterData {
+  return deepMerge(structuredClone(getDefaultNewsletterData(documentId)), source ?? {});
 }
 
 function deepMerge<T>(target: T, source: Partial<T>): T {

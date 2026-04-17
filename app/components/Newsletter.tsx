@@ -11,6 +11,7 @@ import {
   type NewsletterThemeSlug,
 } from "@/lib/newsletterDesigns";
 import { EditableImage } from "./EditableImage";
+import { NewsletterLogo } from "./NewsletterLogo";
 import { EditableText } from "./EditableText";
 import { SectionHeader } from "./SectionHeader";
 import { StatCard } from "./StatCard";
@@ -169,9 +170,23 @@ export default function Newsletter({ design, newsletterSlug }: NewsletterProps) 
           <div className="absolute inset-0 flex flex-col px-[14mm] pt-[18mm] pb-[14mm]">
             {/* Logo row */}
             <div className="flex items-center gap-3 mb-auto">
-              <div className={`w-[9mm] h-[9mm] rounded-full flex items-center justify-center text-white font-black text-[8pt] ${design.cover.logoDot}`}>
-                TTI
-              </div>
+              <NewsletterLogo
+                alt={`${data.meta.organizationName} logo`}
+                className="h-[10mm] w-[24mm]"
+                controlsClassName="right-0 top-0"
+                editable
+                editMode={e}
+                image={data.meta.logo}
+                imageClassName="h-full w-full object-contain"
+                onRemove={() => clearImage("meta.logo")}
+                onUpload={file => uploadImage("meta.logo", file)}
+                placeholder={
+                  <div className={`flex h-full w-full items-center justify-center rounded-[4mm] px-2 text-white font-black text-[8pt] ${design.cover.logoDot}`}>
+                    TTI
+                  </div>
+                }
+                uploading={isUploading("meta.logo")}
+              />
               <EditableText
                 value={data.meta.organizationName}
                 onChange={v => updateField("meta.organizationName", v)}
@@ -268,7 +283,17 @@ export default function Newsletter({ design, newsletterSlug }: NewsletterProps) 
               className="text-white text-[8pt] font-black uppercase tracking-widest"
               multiline={false}
             />
-            <div className="w-[8mm] h-[8mm] rounded-full bg-white/20 flex items-center justify-center text-white text-[7pt] font-black">TTI</div>
+            <NewsletterLogo
+              alt={`${data.meta.organizationName} logo`}
+              className="h-[8mm] w-[16mm]"
+              image={data.meta.logo}
+              imageClassName="h-full w-full object-contain"
+              placeholder={
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-white/20 text-white text-[7pt] font-black">
+                  TTI
+                </div>
+              }
+            />
           </div>
 
           {/* Orange accent stripe below header */}
@@ -414,42 +439,75 @@ export default function Newsletter({ design, newsletterSlug }: NewsletterProps) 
           {/* Large background text */}
           <div className="absolute top-[10mm] right-[8mm] text-gray-100 font-black select-none pointer-events-none" style={{ fontSize: "80pt", lineHeight: 1 }}>Q1</div>
 
-          <div className="page-content">
+          <div className="page-content flex flex-col">
             <SectionHeader accent="orange">Executive Summary</SectionHeader>
 
-            <div className="grid grid-cols-[1fr_48mm] gap-[10mm] mb-[8mm]">
-              <div>
-                <EditableText value={data.executiveSummary.body1} onChange={v => updateField("executiveSummary.body1", v)} editMode={e} tag="p" className="text-gray-900 text-[11pt] leading-relaxed font-semibold mb-4" />
-                <EditableText value={data.executiveSummary.body2} onChange={v => updateField("executiveSummary.body2", v)} editMode={e} tag="p" className="text-gray-600 text-[9.5pt] leading-relaxed" />
+            <div className="mb-[6mm]">
+              <div className="mb-[4mm] inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1">
+                <div className="h-[2.5mm] w-[2.5mm] rounded-full bg-orange-500" />
+                <span className="text-[6.8pt] font-black uppercase tracking-[0.28em] text-orange-600">Quarter at a glance</span>
               </div>
-              {/* Key outcomes */}
-              <div className="bg-gray-900 text-white p-[5mm] rounded self-start">
-                <p className="text-orange-400 text-[7pt] font-black uppercase tracking-widest mb-3">Schools can now:</p>
-                <div className="space-y-3">
-                  {data.executiveSummary.points.map((pt, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      <span className="w-[4mm] h-[4mm] rounded-full bg-orange-500 mt-[2px] flex-shrink-0" />
-                      <EditableText value={pt}
-                        onChange={v => { const n = [...data.executiveSummary.points]; n[i] = v; updateField("executiveSummary.points", n); }}
-                        editMode={e} tag="span" className="text-white/85 text-[8.5pt] leading-snug"
-                      />
-                    </div>
-                  ))}
-                </div>
+              <EditableText
+                value={data.executiveSummary.body1}
+                onChange={v => updateField("executiveSummary.body1", v)}
+                editMode={e}
+                tag="p"
+                className="max-w-[148mm] text-gray-950 text-[13pt] leading-[1.42] font-black mb-[5mm]"
+              />
+              <div className="max-w-[150mm] rounded-[4mm] border border-slate-200 bg-white px-[5mm] py-[4.5mm] shadow-[0_10px_24px_rgba(15,23,42,0.06)]">
+                <EditableText
+                  value={data.executiveSummary.body2}
+                  onChange={v => updateField("executiveSummary.body2", v)}
+                  editMode={e}
+                  tag="p"
+                  className="text-gray-600 text-[9.2pt] leading-relaxed"
+                />
               </div>
             </div>
 
+
             {/* Chapter intro — Key Programme Areas */}
-            <div className="mt-auto">
-              <div className="h-[1px] bg-gray-200 mb-[8mm]" />
-              <div className="bg-gray-900 text-white px-[8mm] py-[10mm] rounded flex items-center justify-between">
-                <div>
-                  <p className="text-orange-500 text-[8pt] font-black uppercase tracking-widest mb-2">Section 02</p>
-                  <h2 className="text-white font-black text-[22pt] leading-none">Key Programme<br />Areas</h2>
+            <div className="mt-[8mm]">
+              <div className="h-[1px] bg-gray-200 mb-[5mm]" />
+              <div className="relative overflow-hidden rounded-[5mm] bg-gray-900 px-[7mm] py-[7mm] text-white shadow-[0_22px_48px_rgba(15,23,42,0.18)]">
+                <div className="absolute right-[-8mm] top-[-8mm] h-[28mm] w-[28mm] rounded-full bg-orange-500/20" />
+                <div className="absolute right-[12mm] top-[10mm] h-[9mm] w-[9mm] rounded-full bg-teal-500/70" />
+                <div className="absolute bottom-[-10mm] left-[18mm] h-[22mm] w-[22mm] rounded-full bg-white/5" />
+
+                <div className="relative z-10 flex items-start justify-between gap-[8mm]">
+                  <div className="max-w-[94mm]">
+                    <p className="text-orange-500 text-[7.5pt] font-black uppercase tracking-[0.28em] mb-2">Section 02</p>
+                    <h2 className="text-white font-black text-[22pt] leading-none">Key Programme<br />Areas</h2>
+                    <EditableText
+                      value={data.selfSustaining.description}
+                      onChange={v => updateField("selfSustaining.description", v)}
+                      editMode={e}
+                      tag="p"
+                      className="mt-3 text-white/72 text-[8.4pt] leading-relaxed"
+                    />
+                  </div>
+                  <div className="min-w-[32mm] rounded-[4mm] border border-white/10 bg-white/5 px-[4mm] py-[4mm] text-right">
+                    <p className="text-[6.3pt] font-black uppercase tracking-[0.24em] text-white/35">In motion</p>
+                    <p className="mt-2 text-[22pt] font-black leading-none text-orange-400">
+                      {String(data.selfSustaining.progress.length).padStart(2, "0")}
+                    </p>
+                    <p className="mt-2 text-[7pt] leading-snug text-white/55">priority updates underway</p>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <div className="w-[12mm] h-[12mm] rounded-full bg-orange-500 opacity-80" />
-                  <div className="w-[8mm] h-[8mm] rounded-full bg-teal-500 opacity-70 mt-3" />
+
+                <div className="relative z-10 mt-[6mm] grid grid-cols-3 gap-[3mm]">
+                  {data.selfSustaining.focusAreas.map((item, i) => (
+                    <div key={i} className="rounded-[4mm] border border-white/10 bg-white/5 px-[4mm] py-[4mm]">
+                      <p className="mb-2 text-[6.8pt] font-black uppercase tracking-[0.24em] text-orange-300">Area 0{i + 1}</p>
+                      <EditableText
+                        value={item}
+                        onChange={v => { const n = [...data.selfSustaining.focusAreas]; n[i] = v; updateField("selfSustaining.focusAreas", n); }}
+                        editMode={e}
+                        tag="p"
+                        className="text-white text-[8pt] font-semibold leading-snug"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

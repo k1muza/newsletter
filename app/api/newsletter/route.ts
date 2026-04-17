@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     const data = await readNewsletterRecord(documentId);
 
     return jsonNoStore({
-      data: mergeNewsletterData(data?.content ?? null),
+      data: mergeNewsletterData(data?.content ?? null, documentId),
       documentId,
       updatedAt: data?.updatedAt ?? null,
     });
@@ -60,7 +60,7 @@ export async function PUT(request: Request) {
     }
 
     const documentId = getDocumentId(request);
-    const content = mergeNewsletterData(payload.data);
+    const content = mergeNewsletterData(payload.data, documentId);
     const updatedAt = new Date().toISOString();
     const record: NewsletterDocumentRecord = {
       content,
