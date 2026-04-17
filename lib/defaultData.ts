@@ -23,6 +23,7 @@ export interface NewsletterData {
     organizationName: string;
     logo: NewsletterImageAsset;
     coverEyebrow: string;
+    contentsNote: string;
     newsletterTitleLead: string;
     newsletterTitleAccent: string;
     preparedBy: string;
@@ -117,6 +118,8 @@ export const defaultData: NewsletterData = {
     organizationName: "Tererai Trent International Foundation",
     logo: createEmptyImageAsset(),
     coverEyebrow: "Quarterly Report",
+    contentsNote:
+      "This contents page tracks the numbered interior sequence after the decorative cover.",
     newsletterTitleLead: "Quarterly",
     newsletterTitleAccent: "Newsletter",
     preparedBy: "Nothando Muza",
@@ -353,6 +356,8 @@ export const resilienceDefaultData: NewsletterData = {
     organizationName: "Tererai Trent International (TTI)",
     logo: createEmptyImageAsset(),
     coverEyebrow: "Quarterly Report",
+    contentsNote:
+      "This contents page tracks the numbered interior sequence after the decorative cover.",
     newsletterTitleLead: "Rural Impact",
     newsletterTitleAccent: "Quarterly Report",
     preparedBy: "TTI Team",

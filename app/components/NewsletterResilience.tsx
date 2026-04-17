@@ -509,12 +509,14 @@ export default function NewsletterResilience({
                   </div>
                 </div>
 
-                <p
+                <EditableText
+                  value={data.meta.contentsNote}
+                  onChange={(value) => updateField("meta.contentsNote", value)}
+                  editMode={e}
+                  tag="p"
                   className="mt-[5mm] text-[7.5pt] leading-relaxed"
                   style={{ color: INK_MID }}
-                >
-                  This contents page tracks the numbered interior sequence after the decorative cover.
-                </p>
+                />
               </PaperPanel>
 
               <div className="space-y-[3mm]">
