@@ -61,6 +61,7 @@ export default function NewsletterResilience({
     0,
     Math.max(data.beneficiaryStory.paragraphs.length - 1, 0)
   );
+  const learningSupport = data.scholarship.learningSupport;
 
   function updateListItem(path: string, list: string[], index: number, value: string) {
     const next = list.map((item, itemIndex) => (itemIndex === index ? value : item));
@@ -872,20 +873,32 @@ export default function NewsletterResilience({
                 </div>
 
                 <DarkPanel>
-                  <PanelLabel label="Learning Support" tone={AMBER} muted />
-                  <p
+                  <EditableText
+                    value={learningSupport.eyebrow}
+                    onChange={(value) => updateField("scholarship.learningSupport.eyebrow", value)}
+                    editMode={e}
+                    tag="p"
+                    multiline={false}
+                    className="mb-3 text-[6.3pt] font-black uppercase tracking-[0.3em]"
+                    style={{ color: AMBER, opacity: 0.9 }}
+                  />
+                  <EditableText
+                    value={learningSupport.headline}
+                    onChange={(value) => updateField("scholarship.learningSupport.headline", value)}
+                    editMode={e}
+                    tag="p"
+                    multiline={false}
                     className="mb-3 text-[14pt] font-black leading-none"
                     style={{ color: "#fff", fontFamily: HEADING_FONT }}
-                  >
-                    1,000 learners
-                  </p>
-                  <p
+                  />
+                  <EditableText
+                    value={learningSupport.body}
+                    onChange={(value) => updateField("scholarship.learningSupport.body", value)}
+                    editMode={e}
+                    tag="p"
                     className="text-[7.6pt] leading-relaxed"
                     style={{ color: "rgba(255,255,255,0.72)" }}
-                  >
-                    Notebooks, pens, and backpacks were distributed to help students move through
-                    the 2026 academic year with essential learning materials already in hand.
-                  </p>
+                  />
                 </DarkPanel>
               </div>
             </div>

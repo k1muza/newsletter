@@ -55,6 +55,11 @@ export interface NewsletterData {
   scholarship: {
     stats: StatCard[];
     description: string;
+    learningSupport: {
+      eyebrow: string;
+      headline: string;
+      body: string;
+    };
   };
   selfSustaining: {
     description: string;
@@ -170,6 +175,12 @@ export const defaultData: NewsletterData = {
     ],
     description:
       "The programme continues to support academically promising students from disadvantaged backgrounds, enabling access to higher education and long-term opportunities.",
+    learningSupport: {
+      eyebrow: "Learning Support",
+      headline: "1,000 learners",
+      body:
+        "Notebooks, pens, and backpacks were distributed to help students move through the 2026 academic year with essential learning materials already in hand.",
+    },
   },
   selfSustaining: {
     description:
@@ -403,6 +414,12 @@ export const resilienceDefaultData: NewsletterData = {
     ],
     description:
       "The scholarship program continues to support academically talented learners from economically disadvantaged backgrounds by covering the costs that make higher education possible.",
+    learningSupport: {
+      eyebrow: "Learning Support",
+      headline: "1,000 learners",
+      body:
+        "Notebooks, pens, and backpacks were distributed to help students move through the 2026 academic year with essential learning materials already in hand.",
+    },
   },
   selfSustaining: {
     description:
