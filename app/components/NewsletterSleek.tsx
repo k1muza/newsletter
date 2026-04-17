@@ -1,8 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import Link from "next/link";
 import { useNewsletterData } from "@/hooks/useNewsletterData";
+import type { NewsletterSlug } from "@/lib/newsletterDesigns";
 import { EditableText } from "./EditableText";
 import { EditableImage } from "./EditableImage";
 import { PageFooter } from "./PageShell";
@@ -25,12 +25,16 @@ function getSyncBadge(saveState: string, errorMessage: string | null) {
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
-export default function NewsletterSleek() {
+interface NewsletterSleekProps {
+  newsletterSlug: NewsletterSlug;
+}
+
+export default function NewsletterSleek({ newsletterSlug }: NewsletterSleekProps) {
   const {
     clearImage, data, editMode, errorMessage, isUploading,
     loaded, resetToDefault, saveState, setEditMode,
     updateField, uploadImage,
-  } = useNewsletterData();
+  } = useNewsletterData(newsletterSlug);
 
 
   if (!loaded) {
@@ -75,7 +79,7 @@ export default function NewsletterSleek() {
             className="rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] transition"
             style={{ borderColor: "rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.5)" }}
           >
-            ← Reports
+            ← Newsletters
           </Link>
           <span style={{ color: "rgba(255,255,255,0.45)" }}>
             Impact Brief · {data.meta.quarter} {data.meta.year}

@@ -1,5 +1,5 @@
 import { notFound, redirect } from "next/navigation";
-import { getNewsletterTheme } from "@/lib/newsletterDesigns";
+import { getNewsletterTheme, getNewsletterThemeHref } from "@/lib/newsletterDesigns";
 
 interface Props {
   params: Promise<{ design: string }>;
@@ -8,9 +8,9 @@ interface Props {
 export default async function LegacyDesignPage({ params }: Props) {
   const { design } = await params;
 
-  // "sleek" is a report slug, not a theme
+  // "sleek" is a newsletter slug, not a theme.
   if (design === "sleek") {
-    redirect("/design/sleek");
+    redirect("/newsletter/sleek");
   }
 
   const theme = getNewsletterTheme(design);
@@ -20,5 +20,5 @@ export default async function LegacyDesignPage({ params }: Props) {
   }
 
   // editorial is the default theme — no query param needed
-  redirect(theme.slug === "editorial" ? "/design/quarterly" : `/design/quarterly?theme=${theme.slug}`);
+  redirect(getNewsletterThemeHref("quarterly", theme.slug));
 }

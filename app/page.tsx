@@ -3,7 +3,7 @@ import { newsletterReports } from "@/lib/newsletterDesigns";
 
 export const metadata = {
   title: "TTI Foundation — Newsletter Studio",
-  description: "Choose a report format to start editing.",
+  description: "Choose a newsletter layout to start editing.",
 };
 
 export default function HomePage() {
@@ -18,16 +18,16 @@ export default function HomePage() {
           Newsletter Studio
         </h1>
         <p className="mt-3 text-sm font-medium text-slate-500">
-          Select a report format to start editing
+          Select a newsletter layout to start editing
         </p>
       </div>
 
-      {/* Report cards */}
+      {/* Newsletter cards */}
       <div className="grid w-full max-w-3xl gap-6 sm:grid-cols-2">
         {newsletterReports.map((report) => (
           <Link
             key={report.slug}
-            href={`/design/${report.slug}`}
+            href={`/newsletter/${report.slug}`}
             className="group flex flex-col overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.08)] transition-all duration-200 hover:-translate-y-1 hover:border-slate-300 hover:shadow-[0_24px_60px_rgba(15,23,42,0.12)]"
           >
             {/* Preview gradient */}

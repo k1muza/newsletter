@@ -1,7 +1,8 @@
 // ── Themes ────────────────────────────────────────────────────────────────────
-// A "theme" changes the visual look of a report without altering its structure.
+// A "theme" changes the visual look of a newsletter without altering its structure.
 
 export type NewsletterThemeSlug = "editorial" | "terracotta";
+export type NewsletterSlug = "quarterly" | "sleek";
 
 export interface NewsletterDesignDefinition {
   slug: NewsletterThemeSlug;
@@ -196,21 +197,26 @@ export function getNewsletterTheme(slug: string): NewsletterDesignDefinition | u
   return newsletterThemes.find((t) => t.slug === slug);
 }
 
-/** URL for switching theme within the quarterly-newsletter report. */
-export function getNewsletterThemeHref(slug: NewsletterThemeSlug): string {
-  return slug === "editorial" ? "/design/quarterly" : `/design/quarterly?theme=${slug}`;
+/** URL for switching theme within a newsletter route. */
+export function getNewsletterThemeHref(
+  newsletterSlug: NewsletterSlug,
+  themeSlug: NewsletterThemeSlug
+): string {
+  return themeSlug === "editorial"
+    ? `/newsletter/${newsletterSlug}`
+    : `/newsletter/${newsletterSlug}?theme=${themeSlug}`;
 }
 
 // ── Reports ───────────────────────────────────────────────────────────────────
-// A "report" is a distinct structure / layout. Each lives at its own route.
+// A "newsletter" is a distinct structure / layout. Each lives at its own route.
 
 export interface NewsletterReport {
-  slug: string;
+  slug: NewsletterSlug;
   name: string;
   tagline: string;
   description: string;
   previewAccent: string;
-  /** Number of theme variants available for this report. */
+  /** Number of theme variants available for this newsletter. */
   themeCount: number;
 }
 
@@ -234,3 +240,7 @@ export const newsletterReports: NewsletterReport[] = [
     themeCount: 1,
   },
 ];
+
+export function getNewsletterReport(slug: string): NewsletterReport | undefined {
+  return newsletterReports.find((report) => report.slug === slug);
+}

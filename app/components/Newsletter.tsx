@@ -7,6 +7,7 @@ import { useNewsletterData } from "@/hooks/useNewsletterData";
 import {
   getNewsletterThemeHref,
   type NewsletterDesignDefinition,
+  type NewsletterSlug,
   type NewsletterThemeSlug,
 } from "@/lib/newsletterDesigns";
 import { EditableImage } from "./EditableImage";
@@ -19,9 +20,10 @@ import { ThemeSwitcherModal } from "./ThemeSwitcherModal";
 
 interface NewsletterProps {
   design: NewsletterDesignDefinition;
+  newsletterSlug: NewsletterSlug;
 }
 
-export default function Newsletter({ design }: NewsletterProps) {
+export default function Newsletter({ design, newsletterSlug }: NewsletterProps) {
   const router = useRouter();
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [isThemePending, startThemeTransition] = useTransition();
@@ -37,7 +39,7 @@ export default function Newsletter({ design }: NewsletterProps) {
     setEditMode,
     updateField,
     uploadImage,
-  } = useNewsletterData();
+  } = useNewsletterData(newsletterSlug);
 
   useEffect(() => {
     if (!isThemeModalOpen) {
@@ -79,7 +81,7 @@ export default function Newsletter({ design }: NewsletterProps) {
     }
 
     startThemeTransition(() => {
-      router.replace(getNewsletterThemeHref(slug), { scroll: false });
+      router.replace(getNewsletterThemeHref(newsletterSlug, slug), { scroll: false });
     });
   }
 
@@ -89,7 +91,7 @@ export default function Newsletter({ design }: NewsletterProps) {
       <div className={`screen-only fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 py-2 text-xs font-semibold ${design.screen.toolbar}`}>
         <div className="flex items-center gap-3">
           <Link href="/" className="rounded-full border border-white/15 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-white/50 transition hover:border-white/30 hover:text-white/80">
-            ← Reports
+            ← Newsletters
           </Link>
           <span className="text-gray-400">TTI Newsletter · {data.meta.quarter} {data.meta.year}</span>
         </div>

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default function DesignsPage() {
-  redirect("/design/editorial");
+  redirect("/newsletter/quarterly");
 }

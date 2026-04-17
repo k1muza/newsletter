@@ -64,6 +64,13 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
   useEffect(() => {
     const controller = new AbortController();
 
+    pendingSaveRef.current = false;
+    saveRequestRef.current += 1;
+    if (saveTimeoutRef.current !== null) {
+      window.clearTimeout(saveTimeoutRef.current);
+      saveTimeoutRef.current = null;
+    }
+
     async function loadNewsletter() {
       setLoaded(false);
       setSaveState("loading");
@@ -104,6 +111,7 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
 
       if (saveTimeoutRef.current !== null) {
         window.clearTimeout(saveTimeoutRef.current);
+        saveTimeoutRef.current = null;
       }
     };
   }, [documentUrl]);
