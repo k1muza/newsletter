@@ -254,8 +254,6 @@ export default function NewsletterResilience({
           <div
             className="absolute right-[28mm] top-[72mm] h-[118mm] w-[52mm] rounded-[28mm]"
             style={{
-              background:
-                "linear-gradient(180deg, rgba(255,250,243,0.95), rgba(244,237,227,0.76))",
               boxShadow: "0 30px 60px rgba(7,19,16,0.2)",
             }}
           />
