@@ -1,23 +1,22 @@
-import {
-  newsletterThemes,
-  type NewsletterThemeSlug,
-} from "@/lib/newsletterDesigns";
+import type { ThemeSwitcherOption } from "@/lib/newsletterDesigns";
 
-interface ThemeSwitcherModalProps {
-  currentTheme: NewsletterThemeSlug;
+interface ThemeSwitcherModalProps<TThemeSlug extends string> {
+  currentTheme: TThemeSlug;
   isOpen: boolean;
   isPending: boolean;
   onClose: () => void;
-  onSelect: (slug: NewsletterThemeSlug) => void;
+  onSelect: (slug: TThemeSlug) => void;
+  themes: readonly ThemeSwitcherOption<TThemeSlug>[];
 }
 
-export function ThemeSwitcherModal({
+export function ThemeSwitcherModal<TThemeSlug extends string>({
   currentTheme,
   isOpen,
   isPending,
   onClose,
   onSelect,
-}: ThemeSwitcherModalProps) {
+  themes,
+}: ThemeSwitcherModalProps<TThemeSlug>) {
   if (!isOpen) {
     return null;
   }
@@ -62,8 +61,8 @@ export function ThemeSwitcherModal({
         </div>
 
         <div className="px-8 py-8">
-          <div className="grid gap-5 sm:grid-cols-2">
-            {newsletterThemes.map((theme) => {
+          <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+            {themes.map((theme) => {
               const isCurrent = theme.slug === currentTheme;
 
               return (

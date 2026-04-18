@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth/server";
 import type { NewsletterData } from "@/lib/defaultData";
 import {
   DEFAULT_NEWSLETTER_DOCUMENT_ID,
@@ -28,6 +29,15 @@ interface NewsletterPayload {
 
 export async function GET(request: Request) {
   try {
+    if (!(await getCurrentUser())) {
+      return jsonNoStore(
+        {
+          error: "Authentication required.",
+        },
+        { status: 401 }
+      );
+    }
+
     const documentId = getDocumentId(request);
     const data = await readNewsletterRecord(documentId);
 
@@ -48,6 +58,15 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    if (!(await getCurrentUser())) {
+      return jsonNoStore(
+        {
+          error: "Authentication required.",
+        },
+        { status: 401 }
+      );
+    }
+
     const payload = (await request.json()) as NewsletterPayload;
 
     if (!payload?.data || typeof payload.data !== "object") {

@@ -11,9 +11,12 @@ SUPABASE_URL=https://your-project-ref.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 SUPABASE_NEWSLETTER_DATA_BUCKET=newsletter-data
 SUPABASE_NEWSLETTER_IMAGE_BUCKET=newsletter-images
+AUTH_SESSION_SECRET=replace-with-a-long-random-secret
+AUTH_REGISTRATION_ENABLED=false
 ```
 
 `SUPABASE_NEWSLETTER_DATA_BUCKET` and `SUPABASE_NEWSLETTER_IMAGE_BUCKET` are optional. The defaults shown above will be used if you omit them.
+`AUTH_SESSION_SECRET` is required for login sessions. `AUTH_REGISTRATION_ENABLED` controls whether `/register` is available.
 
 ### 2. Restart the app
 

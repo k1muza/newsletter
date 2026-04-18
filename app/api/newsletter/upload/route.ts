@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getCurrentUser } from "@/lib/auth/server";
 import type { NewsletterImageAsset } from "@/lib/defaultData";
 import {
   DEFAULT_NEWSLETTER_DOCUMENT_ID,
@@ -26,6 +27,15 @@ const MIME_EXTENSIONS: Record<string, string> = {
 
 export async function POST(request: Request) {
   try {
+    if (!(await getCurrentUser())) {
+      return jsonNoStore(
+        {
+          error: "Authentication required.",
+        },
+        { status: 401 }
+      );
+    }
+
     const formData = await request.formData();
     const file = formData.get("file");
 

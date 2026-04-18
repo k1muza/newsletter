@@ -10,6 +10,7 @@ import {
   DEFAULT_NEWSLETTER_DOCUMENT_ID,
   mergeNewsletterData,
 } from "@/lib/newsletterData";
+import { buildLoginHref } from "@/lib/auth/urls";
 
 type SaveState = "loading" | "idle" | "saving" | "saved" | "error";
 
@@ -50,6 +51,8 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
         body: JSON.stringify({ data: nextData }),
       });
 
+      redirectToLoginOnUnauthorized(response);
+
       if (!response.ok) {
         throw new Error(await readErrorMessage(response));
       }
@@ -81,6 +84,8 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
           cache: "no-store",
           signal: controller.signal,
         });
+
+        redirectToLoginOnUnauthorized(response);
 
         if (!response.ok) {
           throw new Error(await readErrorMessage(response));
@@ -193,6 +198,8 @@ export function useNewsletterData(documentId = DEFAULT_NEWSLETTER_DOCUMENT_ID) {
           body: formData,
         });
 
+        redirectToLoginOnUnauthorized(response);
+
         if (!response.ok) {
           throw new Error(await readErrorMessage(response));
         }
@@ -268,4 +275,13 @@ async function readErrorMessage(response: Response) {
   }
 
   return response.statusText || "Request failed.";
+}
+
+function redirectToLoginOnUnauthorized(response: Response) {
+  if (response.status !== 401 || typeof window === "undefined") {
+    return;
+  }
+
+  const currentPath = `${window.location.pathname}${window.location.search}`;
+  window.location.assign(buildLoginHref(currentPath));
 }

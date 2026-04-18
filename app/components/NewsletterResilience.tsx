@@ -1,24 +1,39 @@
 "use client";
 
-import type { ReactNode } from "react";
+import {
+  useEffect,
+  useState,
+  useTransition,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useNewsletterData } from "@/hooks/useNewsletterData";
-import type { NewsletterSlug } from "@/lib/newsletterDesigns";
+import {
+  getResilienceThemeHref,
+  resilienceThemes,
+  type NewsletterSlug,
+  type ResilienceThemeDefinition,
+  type ResilienceThemeSlug,
+} from "@/lib/newsletterDesigns";
 import { EditableImage } from "./EditableImage";
 import { EditableText } from "./EditableText";
 import { PageFooter } from "./PageShell";
+import { ThemeSwitcherModal } from "./ThemeSwitcherModal";
 
-const FOREST = "#173f35";
-const FOREST_DEEP = "#0d2a23";
-const MOSS = "#2d6a4f";
-const CLAY = "#c96f4d";
-const AMBER = "#d8a13f";
-const SAND = "#f4ede3";
-const PAPER = "#fffaf3";
-const INK = "#1f2933";
-const INK_MID = "#52606d";
-const INK_LIGHT = "#7b8794";
-const HEADING_FONT = 'Georgia, "Times New Roman", serif';
+const FOREST = "var(--resilience-forest)";
+const FOREST_DEEP = "var(--resilience-forest-deep)";
+const MOSS = "var(--resilience-moss)";
+const CLAY = "var(--resilience-clay)";
+const AMBER = "var(--resilience-amber)";
+const SAND = "var(--resilience-sand)";
+const PAPER = "var(--resilience-paper)";
+const INK = "var(--resilience-ink)";
+const INK_MID = "var(--resilience-ink-mid)";
+const INK_LIGHT = "var(--resilience-ink-light)";
+const HIGHLIGHT = "var(--resilience-highlight)";
+const HEADING_FONT = "var(--resilience-heading-font)";
 const RESILIENCE_CONTENTS = [
   {
     page: 2,
@@ -78,11 +93,16 @@ const DEFAULT_LEARNING_SUPPORT = {
 
 interface NewsletterResilienceProps {
   newsletterSlug: NewsletterSlug;
+  theme: ResilienceThemeDefinition;
 }
 
 export default function NewsletterResilience({
   newsletterSlug,
+  theme,
 }: NewsletterResilienceProps) {
+  const router = useRouter();
+  const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
+  const [isThemePending, startThemeTransition] = useTransition();
   const {
     clearImage,
     data,
@@ -96,14 +116,38 @@ export default function NewsletterResilience({
     updateField,
     uploadImage,
   } = useNewsletterData(newsletterSlug);
+  const themeStyles = getResilienceThemeStyles(theme);
+
+  useEffect(() => {
+    if (!isThemeModalOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsThemeModalOpen(false);
+      }
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isThemeModalOpen]);
 
   if (!loaded) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-stone-100">
-        <div
-          className="h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"
-          style={{ borderColor: `${CLAY} transparent ${CLAY} ${CLAY}` }}
-        />
+      <div style={themeStyles}>
+        <div className="flex min-h-screen items-center justify-center bg-stone-100">
+          <div
+            className="h-8 w-8 animate-spin rounded-full border-4 border-t-transparent"
+            style={{ borderColor: `${CLAY} transparent ${CLAY} ${CLAY}` }}
+          />
+        </div>
       </div>
     );
   }
@@ -118,6 +162,18 @@ export default function NewsletterResilience({
     Math.max(data.beneficiaryStory.paragraphs.length - 1, 0)
   );
   const learningSupport = data.scholarship.learningSupport ?? DEFAULT_LEARNING_SUPPORT;
+
+  function handleThemeSelect(slug: ResilienceThemeSlug) {
+    setIsThemeModalOpen(false);
+
+    if (slug === theme.slug) {
+      return;
+    }
+
+    startThemeTransition(() => {
+      router.replace(getResilienceThemeHref(slug), { scroll: false });
+    });
+  }
 
   function updateListItem(path: string, list: string[], index: number, value: string) {
     const next = list.map((item, itemIndex) => (itemIndex === index ? value : item));
@@ -168,7 +224,7 @@ export default function NewsletterResilience({
   }
 
   return (
-    <>
+    <div style={themeStyles}>
       <div
         className="screen-only fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-2 text-xs font-semibold"
         style={{ background: FOREST_DEEP, color: "rgba(255,255,255,0.88)" }}
@@ -195,12 +251,28 @@ export default function NewsletterResilience({
           >
             {badge.label}
           </span>
+          <button
+            type="button"
+            aria-expanded={isThemeModalOpen}
+            aria-haspopup="dialog"
+            disabled={isThemePending}
+            onClick={() => setIsThemeModalOpen(true)}
+            className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all ${
+              isThemePending ? "cursor-wait opacity-70" : ""
+            }`}
+            style={{
+              background: "rgba(255,255,255,0.08)",
+              color: "rgba(255,255,255,0.86)",
+            }}
+          >
+            Theme: {theme.name}
+          </button>
           {editMode ? (
             <button
               type="button"
               onClick={resetToDefault}
               className="transition-colors"
-              style={{ color: "#f7c88d" }}
+              style={{ color: HIGHLIGHT }}
             >
               Reset defaults
             </button>
@@ -346,7 +418,7 @@ export default function NewsletterResilience({
                       tag="p"
                       multiline={false}
                       className="text-[6.8pt] font-black uppercase tracking-[0.34em]"
-                      style={{ color: "#f7c88d" }}
+                      style={{ color: HIGHLIGHT }}
                     />
                   </div>
 
@@ -357,7 +429,7 @@ export default function NewsletterResilience({
                     tag="h1"
                     multiline={false}
                     className="max-w-[96mm] text-[50pt] font-black leading-[0.88] tracking-[-0.05em]"
-                    style={{ color: "#fffaf3", fontFamily: HEADING_FONT }}
+                    style={{ color: PAPER, fontFamily: HEADING_FONT }}
                   />
                   <EditableText
                     value={data.meta.newsletterTitleAccent}
@@ -366,7 +438,7 @@ export default function NewsletterResilience({
                     tag="h1"
                     multiline={false}
                     className="mt-1 max-w-[96mm] text-[50pt] font-black leading-[0.88] tracking-[-0.05em]"
-                    style={{ color: "#f7c88d", fontFamily: HEADING_FONT }}
+                    style={{ color: HIGHLIGHT, fontFamily: HEADING_FONT }}
                   />
 
                   <EditableText
@@ -394,7 +466,7 @@ export default function NewsletterResilience({
                   style={{
                     borderColor: "rgba(255,255,255,0.1)",
                     background: "rgba(255,255,255,0.04)",
-                    color: "#f7c88d",
+                    color: HIGHLIGHT,
                   }}
                 >
                   Resilience Edition
@@ -1800,8 +1872,33 @@ export default function NewsletterResilience({
           <strong>Background graphics</strong> for the full layout treatment.
         </div>
       ) : null}
-    </>
+      <ThemeSwitcherModal
+        currentTheme={theme.slug}
+        isOpen={isThemeModalOpen}
+        isPending={isThemePending}
+        onClose={() => setIsThemeModalOpen(false)}
+        onSelect={handleThemeSelect}
+        themes={resilienceThemes}
+      />
+    </div>
   );
+}
+
+function getResilienceThemeStyles(theme: ResilienceThemeDefinition): CSSProperties {
+  return {
+    "--resilience-forest": theme.colors.forest,
+    "--resilience-forest-deep": theme.colors.forestDeep,
+    "--resilience-moss": theme.colors.moss,
+    "--resilience-clay": theme.colors.clay,
+    "--resilience-amber": theme.colors.amber,
+    "--resilience-sand": theme.colors.sand,
+    "--resilience-paper": theme.colors.paper,
+    "--resilience-ink": theme.colors.ink,
+    "--resilience-ink-mid": theme.colors.inkMid,
+    "--resilience-ink-light": theme.colors.inkLight,
+    "--resilience-highlight": theme.colors.highlight,
+    "--resilience-heading-font": theme.colors.headingFont,
+  } as CSSProperties;
 }
 
 function getSyncBadge(

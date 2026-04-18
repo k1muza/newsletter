@@ -1,14 +1,19 @@
 // ── Themes ────────────────────────────────────────────────────────────────────
 // A "theme" changes the visual look of a newsletter without altering its structure.
 
-export type NewsletterThemeSlug = "editorial" | "terracotta";
-export type NewsletterSlug = "quarterly" | "sleek" | "resilience";
-
-export interface NewsletterDesignDefinition {
-  slug: NewsletterThemeSlug;
+export interface ThemeSwitcherOption<TThemeSlug extends string = string> {
+  slug: TThemeSlug;
   name: string;
   description: string;
   previewAccent: string;
+}
+
+export type NewsletterThemeSlug = "editorial" | "terracotta";
+export type ResilienceThemeSlug = "heritage" | "canopy" | "sunrise";
+export type NewsletterSlug = "quarterly" | "sleek" | "resilience";
+
+export interface NewsletterDesignDefinition
+  extends ThemeSwitcherOption<NewsletterThemeSlug> {
   screen: {
     toolbar: string;
     subtitle: string;
@@ -61,6 +66,24 @@ export interface NewsletterDesignDefinition {
     contactIcon: string;
     closingCard: string;
     closingEyebrow: string;
+  };
+}
+
+export interface ResilienceThemeDefinition
+  extends ThemeSwitcherOption<ResilienceThemeSlug> {
+  colors: {
+    forest: string;
+    forestDeep: string;
+    moss: string;
+    clay: string;
+    amber: string;
+    sand: string;
+    paper: string;
+    ink: string;
+    inkMid: string;
+    inkLight: string;
+    highlight: string;
+    headingFont: string;
   };
 }
 
@@ -193,8 +216,77 @@ export const newsletterThemes: NewsletterDesignDefinition[] = [
 
 export const defaultNewsletterTheme = newsletterThemes[0];
 
+export const resilienceThemes: ResilienceThemeDefinition[] = [
+  {
+    slug: "heritage",
+    name: "Heritage Ledger",
+    description: "The original warm editorial look with deep forest, clay, and gold accents.",
+    previewAccent: "from-[#173f35] via-[#2d6a4f] to-[#d8a13f]",
+    colors: {
+      forest: "#173f35",
+      forestDeep: "#0d2a23",
+      moss: "#2d6a4f",
+      clay: "#c96f4d",
+      amber: "#d8a13f",
+      sand: "#f4ede3",
+      paper: "#fffaf3",
+      ink: "#1f2933",
+      inkMid: "#52606d",
+      inkLight: "#7b8794",
+      highlight: "#f7c88d",
+      headingFont: 'Georgia, "Times New Roman", serif',
+    },
+  },
+  {
+    slug: "canopy",
+    name: "Canopy Journal",
+    description: "A cooler evergreen palette with soft sage neutrals and quieter contrast.",
+    previewAccent: "from-[#08261d] via-[#35755e] to-[#d4b15a]",
+    colors: {
+      forest: "#0f3b2f",
+      forestDeep: "#08261d",
+      moss: "#35755e",
+      clay: "#8c5a3c",
+      amber: "#d4b15a",
+      sand: "#edf0e7",
+      paper: "#fbfdf7",
+      ink: "#1b2d29",
+      inkMid: "#506662",
+      inkLight: "#7c8b86",
+      highlight: "#dbe7c4",
+      headingFont: "Cambria, Georgia, serif",
+    },
+  },
+  {
+    slug: "sunrise",
+    name: "Sunrise Review",
+    description: "A softer clay-and-honey treatment that feels warmer and more ceremonial.",
+    previewAccent: "from-[#40271d] via-[#d97941] to-[#f0b95c]",
+    colors: {
+      forest: "#4a352c",
+      forestDeep: "#2a1a16",
+      moss: "#7b5a43",
+      clay: "#d97941",
+      amber: "#f0b95c",
+      sand: "#f7ead8",
+      paper: "#fff8f0",
+      ink: "#36291f",
+      inkMid: "#6f5b48",
+      inkLight: "#a19080",
+      highlight: "#ffd8a8",
+      headingFont: '"Palatino Linotype", "Book Antiqua", Palatino, serif',
+    },
+  },
+];
+
 export function getNewsletterTheme(slug: string): NewsletterDesignDefinition | undefined {
   return newsletterThemes.find((t) => t.slug === slug);
+}
+
+export const defaultResilienceTheme = resilienceThemes[0];
+
+export function getResilienceTheme(slug: string): ResilienceThemeDefinition | undefined {
+  return resilienceThemes.find((theme) => theme.slug === slug);
 }
 
 /** URL for switching theme within a newsletter route. */
@@ -205,6 +297,13 @@ export function getNewsletterThemeHref(
   return themeSlug === "editorial"
     ? `/newsletter/${newsletterSlug}`
     : `/newsletter/${newsletterSlug}?theme=${themeSlug}`;
+}
+
+/** URL for switching theme within the resilience report. */
+export function getResilienceThemeHref(themeSlug: ResilienceThemeSlug): string {
+  return themeSlug === defaultResilienceTheme.slug
+    ? "/newsletter/resilience"
+    : `/newsletter/resilience?theme=${themeSlug}`;
 }
 
 // ── Reports ───────────────────────────────────────────────────────────────────
@@ -244,9 +343,9 @@ export const newsletterReports: NewsletterReport[] = [
     name: "Rural Resilience",
     tagline: "10-page warm editorial report",
     description:
-      "A polished long-form layout for scholarship stories, self-sustaining schools, and infrastructure progress across rural communities.",
+      "A polished long-form layout for scholarship stories, self-sustaining schools, and infrastructure progress across rural communities, now with three switchable themes.",
     previewAccent: "from-[#1b4332] via-[#2d6a4f] to-[#f4a261]",
-    themeCount: 1,
+    themeCount: 3,
   },
 ];
 

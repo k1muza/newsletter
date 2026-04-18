@@ -4,7 +4,9 @@ import NewsletterResilience from "@/app/components/NewsletterResilience";
 import NewsletterSleek from "@/app/components/NewsletterSleek";
 import {
   defaultNewsletterTheme,
+  defaultResilienceTheme,
   getNewsletterReport,
+  getResilienceTheme,
   getNewsletterTheme,
   newsletterReports,
 } from "@/lib/newsletterDesigns";
@@ -38,7 +40,8 @@ export default async function NewsletterPage({ params, searchParams }: Props) {
   }
 
   if (report.slug === "resilience") {
-    return <NewsletterResilience newsletterSlug={report.slug} />;
+    const design = getResilienceTheme(themeSlug ?? "") ?? defaultResilienceTheme;
+    return <NewsletterResilience newsletterSlug={report.slug} theme={design} />;
   }
 
   const design = getNewsletterTheme(themeSlug ?? "") ?? defaultNewsletterTheme;

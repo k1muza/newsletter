@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useNewsletterData } from "@/hooks/useNewsletterData";
 import {
   getNewsletterThemeHref,
+  newsletterThemes,
   type NewsletterDesignDefinition,
   type NewsletterSlug,
   type NewsletterThemeSlug,
@@ -993,6 +994,7 @@ export default function Newsletter({ design, newsletterSlug }: NewsletterProps) 
         isPending={isThemePending}
         onClose={() => setIsThemeModalOpen(false)}
         onSelect={handleThemeSelect}
+        themes={newsletterThemes}
       />
     </>
   );
