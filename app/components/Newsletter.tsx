@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useNewsletterData } from "@/hooks/useNewsletterData";
 import {
@@ -19,6 +19,10 @@ import { StatCard } from "./StatCard";
 import { SchoolCard } from "./SchoolCard";
 import { PageFooter } from "./PageShell";
 import { ThemeSwitcherModal } from "./ThemeSwitcherModal";
+import {
+  getStandaloneHtmlExportMeta,
+  useStandaloneHtmlExport,
+} from "./useStandaloneHtmlExport";
 
 interface NewsletterProps {
   design: NewsletterDesignDefinition;
@@ -27,6 +31,7 @@ interface NewsletterProps {
 
 export default function Newsletter({ design, newsletterSlug }: NewsletterProps) {
   const router = useRouter();
+  const exportRef = useRef<HTMLDivElement>(null);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [isThemePending, startThemeTransition] = useTransition();
   const {
@@ -63,6 +68,22 @@ export default function Newsletter({ design, newsletterSlug }: NewsletterProps) 
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isThemeModalOpen]);
+
+  const exportMeta = getStandaloneHtmlExportMeta({
+    newsletterSlug,
+    organizationName: data.meta.organizationName,
+    quarter: data.meta.quarter,
+    titleAccent: data.meta.newsletterTitleAccent,
+    titleLead: data.meta.newsletterTitleLead,
+    year: data.meta.year,
+  });
+  const { exportHtml, isExporting } = useStandaloneHtmlExport({
+    documentTitle: exportMeta.documentTitle,
+    editMode,
+    fileName: exportMeta.fileName,
+    rootRef: exportRef,
+    setEditMode,
+  });
 
   if (!loaded) {
     return (
@@ -141,11 +162,24 @@ export default function Newsletter({ design, newsletterSlug }: NewsletterProps) 
           >
             Save as PDF
           </button>
+          <button
+            type="button"
+            disabled={isExporting}
+            onClick={exportHtml}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${design.screen.print} ${
+              isExporting ? "cursor-wait opacity-75" : ""
+            }`}
+          >
+            {isExporting ? "Exporting..." : "Export HTML"}
+          </button>
         </div>
       </div>
 
       {/* ── Pages wrapper ──────────────────────────────────────── */}
-      <div className={`pt-0 pb-12 ${editMode ? design.screen.editingBackground : design.screen.viewingBackground}`}>
+      <div
+        ref={exportRef}
+        className={`pt-0 pb-12 ${editMode ? design.screen.editingBackground : design.screen.viewingBackground}`}
+      >
 
         {/* ════════════════════════════════════════════════════════
             PAGE 1 — COVER

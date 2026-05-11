@@ -2,6 +2,7 @@
 
 import {
   useEffect,
+  useRef,
   useState,
   useTransition,
   type CSSProperties,
@@ -21,6 +22,10 @@ import { EditableImage } from "./EditableImage";
 import { EditableText } from "./EditableText";
 import { PageFooter } from "./PageShell";
 import { ThemeSwitcherModal } from "./ThemeSwitcherModal";
+import {
+  getStandaloneHtmlExportMeta,
+  useStandaloneHtmlExport,
+} from "./useStandaloneHtmlExport";
 
 const FOREST = "var(--resilience-forest)";
 const FOREST_DEEP = "var(--resilience-forest-deep)";
@@ -101,6 +106,7 @@ export default function NewsletterResilience({
   theme,
 }: NewsletterResilienceProps) {
   const router = useRouter();
+  const exportRef = useRef<HTMLDivElement>(null);
   const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
   const [isThemePending, startThemeTransition] = useTransition();
   const {
@@ -138,6 +144,21 @@ export default function NewsletterResilience({
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [isThemeModalOpen]);
+  const exportMeta = getStandaloneHtmlExportMeta({
+    newsletterSlug,
+    organizationName: data.meta.organizationName,
+    quarter: data.meta.quarter,
+    titleAccent: data.meta.newsletterTitleAccent,
+    titleLead: data.meta.newsletterTitleLead,
+    year: data.meta.year,
+  });
+  const { exportHtml, isExporting } = useStandaloneHtmlExport({
+    documentTitle: exportMeta.documentTitle,
+    editMode,
+    fileName: exportMeta.fileName,
+    rootRef: exportRef,
+    setEditMode,
+  });
 
   if (!loaded) {
     return (
@@ -224,7 +245,7 @@ export default function NewsletterResilience({
   }
 
   return (
-    <div style={themeStyles}>
+    <div ref={exportRef} style={themeStyles}>
       <div
         className="screen-only fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-2 text-xs font-semibold"
         style={{ background: FOREST_DEEP, color: "rgba(255,255,255,0.88)" }}
@@ -296,6 +317,20 @@ export default function NewsletterResilience({
             style={{ background: "#fff", color: FOREST_DEEP }}
           >
             Save as PDF
+          </button>
+          <button
+            type="button"
+            disabled={isExporting}
+            onClick={exportHtml}
+            className="rounded-full px-4 py-1.5 text-xs font-bold transition-colors"
+            style={{
+              background: "#fff",
+              color: FOREST_DEEP,
+              opacity: isExporting ? 0.75 : 1,
+              cursor: isExporting ? "wait" : "pointer",
+            }}
+          >
+            {isExporting ? "Exporting..." : "Export HTML"}
           </button>
         </div>
       </div>

@@ -1,12 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import { useRef } from "react";
 import { useNewsletterData } from "@/hooks/useNewsletterData";
 import type { NewsletterSlug } from "@/lib/newsletterDesigns";
 import { EditableText } from "./EditableText";
 import { EditableImage } from "./EditableImage";
 import { NewsletterLogo } from "./NewsletterLogo";
 import { PageFooter } from "./PageShell";
+import {
+  getStandaloneHtmlExportMeta,
+  useStandaloneHtmlExport,
+} from "./useStandaloneHtmlExport";
 
 // ── Design tokens ─────────────────────────────────────────────────────────────
 const NAVY = "#1e3a5f";
@@ -31,13 +36,33 @@ interface NewsletterSleekProps {
 }
 
 export default function NewsletterSleek({ newsletterSlug }: NewsletterSleekProps) {
+  const exportRef = useRef<HTMLDivElement>(null);
   const {
     clearImage, data, editMode, errorMessage, isUploading,
     loaded, resetToDefault, saveState, setEditMode,
     updateField, uploadImage,
   } = useNewsletterData(newsletterSlug);
 
+  const e = editMode;
+  const badge = getSyncBadge(saveState, errorMessage);
+  const org = data.meta.organizationName;
+  const exportMeta = getStandaloneHtmlExportMeta({
+    newsletterSlug,
+    organizationName: data.meta.organizationName,
+    quarter: data.meta.quarter,
+    titleAccent: data.meta.newsletterTitleAccent,
+    titleLead: data.meta.newsletterTitleLead,
+    year: data.meta.year,
+  });
+  const { exportHtml, isExporting } = useStandaloneHtmlExport({
+    documentTitle: exportMeta.documentTitle,
+    editMode,
+    fileName: exportMeta.fileName,
+    rootRef: exportRef,
+    setEditMode,
+  });
 
+  // ── Helpers ──────────────────────────────────────────────────────────────
   if (!loaded) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-slate-100">
@@ -46,11 +71,6 @@ export default function NewsletterSleek({ newsletterSlug }: NewsletterSleekProps
     );
   }
 
-  const e = editMode;
-  const badge = getSyncBadge(saveState, errorMessage);
-  const org = data.meta.organizationName;
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
   function updateStat(
     field: "scholarship" | "innovationProgress",
     i: number,
@@ -120,11 +140,28 @@ export default function NewsletterSleek({ newsletterSlug }: NewsletterSleekProps
           >
             Save as PDF
           </button>
+          <button
+            type="button"
+            disabled={isExporting}
+            onClick={exportHtml}
+            className="rounded-full px-4 py-1.5 text-xs font-bold transition-colors"
+            style={{
+              background: "#fff",
+              color: NAVY,
+              opacity: isExporting ? 0.75 : 1,
+              cursor: isExporting ? "wait" : "pointer",
+            }}
+          >
+            {isExporting ? "Exporting..." : "Export HTML"}
+          </button>
         </div>
       </div>
 
       {/* ── Pages ──────────────────────────────────────────────────────────── */}
-      <div className={`pb-12 pt-0 ${editMode ? "bg-amber-50/60" : "bg-slate-200"}`}>
+      <div
+        ref={exportRef}
+        className={`pb-12 pt-0 ${editMode ? "bg-amber-50/60" : "bg-slate-200"}`}
+      >
 
         {/* ══════════════════════════════════════════════════════════════════
             PAGE 1 — COVER
